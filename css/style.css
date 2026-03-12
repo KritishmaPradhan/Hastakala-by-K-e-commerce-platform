@@ -506,7 +506,7 @@ footer {
 
 
 /* Explore Work Toggle */
-/* .explore-work {
+.explore-work {
     background: linear-gradient(180deg, #ffe5f6 0%, #fff7fc 65%, #fff 100%);
     padding-top: 2.2rem;
 }
@@ -562,7 +562,6 @@ footer {
         box-shadow: 0 0 0 10px rgba(246, 114, 128, 0), 0 0 30px rgba(246, 114, 128, 0.7), 0 16px 30px rgba(108, 91, 123, 0.34);
     }
 }
-
 
 .explore-work-panel {
     margin-top: 1rem;
@@ -651,14 +650,28 @@ footer {
 
 /* Swipe gallery carousel */
 #galleryCarousel{
-    background-color: #ffe5f6;;
+    background-color: #ffe5f6;
+}
+
+/* Hide carousel on mobile, show on desktop */
+@media (max-width: 605px) {
+    #galleryCarousel {
+        display: none;
+    }
+    .explore-work {
+        display: block;
+    }
+}
+
+@media (min-width: 606px) {
+    .explore-work {
+        display: none;
+    }
 }
 .containerc{
     position: relative;
-    /* top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%); */
-    width: 1000px;
+    width: 90%;
+    max-width: 1000px;
     height: 600px;
     margin: 0 auto;
     overflow: visible;
@@ -682,7 +695,7 @@ footer {
 .slide .item:nth-child(1),
 .slide .item:nth-child(2){
     top: 0;
-    left:0;
+    left: 0;
     transform: translate(0, 0);
     border-radius: 0;
     width: 100%;
@@ -691,9 +704,8 @@ footer {
     background-repeat: no-repeat;
     background-position: left center;
     border-radius: 40px;
-    box-shadow:0 30px 50px #505050;
+    box-shadow: 0 10px 50px #505050;
 }
-
 
 .slide .item:nth-child(3){
     left: 50%;
@@ -711,8 +723,6 @@ footer {
     opacity: 0;
 }
 
-
-
 .item .content{
     position: absolute;
     top: 24px;
@@ -722,14 +732,12 @@ footer {
     color: rgb(5, 5, 5);
     transform: none;
     display: none;
-    font-family:Georgia, 'Times New Roman', Times, serif
+    font-family: Georgia, 'Times New Roman', Times, serif;
 }
-
 
 .slide .item:nth-child(2) .content{
     display: block;
 }
-
 
 .content .name{
     font-size: 40px;
@@ -746,6 +754,7 @@ footer {
     animation: animate 1s ease-in-out 0.3s 1 forwards;
     color: rgb(253, 253, 251);
     text-shadow: 0 0 50px rgb(13, 13, 13);
+    font-size: 16px;
 }
 
 @keyframes animate {
@@ -766,7 +775,7 @@ footer {
     text-align: left;
     position: absolute;
     bottom: 20px;
-    left:30px;
+    left: 30px;
 }
 
 .buttonc button{
@@ -781,11 +790,13 @@ footer {
     background-size: 280% 280%;
     box-shadow: 0 0 0 rgba(246, 114, 128, 0.4), 0 0 18px rgba(246, 114, 128, 0.42), 0 12px 26px rgba(108, 91, 123, 0.25);
     animation: exploreBtnGradient 5.5s linear infinite, exploreBtnGlowScale 1.8s ease-in-out infinite;
+    font-size: 16px;
 }
 
 .buttonc button:hover{
-    color: white
+    color: white;
 }
+
 @keyframes exploreBtnGradient {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
@@ -802,3 +813,156 @@ footer {
         box-shadow: 0 0 0 10px rgba(246, 114, 128, 0), 0 0 30px rgba(246, 114, 128, 0.7), 0 16px 30px rgba(108, 91, 123, 0.34);
     }
 }
+
+/* Responsive Design - Below 605px */
+/* @media (max-width: 605px) {
+    .containerc {
+        width: 95%;
+        height: clamp(480px, 70vh, 600px);
+        overflow: hidden;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .containerc .slide .item {
+        width: clamp(120px, 20vw, 200px);
+        height: clamp(120px, 20vw, 200px);
+    }
+
+    .slide .item:nth-child(3) {
+        left: clamp(calc(50% - 120px), calc(50% - 15vw), calc(50% - 80px));
+        width: clamp(90px, 15vw, 150px);
+        height: clamp(90px, 15vw, 150px);
+    }
+
+    .slide .item:nth-child(4) {
+        left: clamp(calc(50% + 10px), calc(50% + 8vw), calc(50% + 50px));
+        width: clamp(85px, 14vw, 140px);
+        height: clamp(85px, 14vw, 140px);
+    }
+
+    .slide .item:nth-child(5) {
+        left: clamp(calc(50% + 110px), calc(50% + 28vw), calc(50% + 170px));
+        width: clamp(80px, 13vw, 130px);
+        height: clamp(80px, 13vw, 130px);
+    }
+
+    .slide .item:nth-child(n + 6) {
+        left: clamp(calc(50% + 200px), calc(50% + 45vw), calc(50% + 270px));
+        width: clamp(75px, 12vw, 120px);
+        height: clamp(75px, 12vw, 120px);
+        opacity: 0.7;
+        max-width: calc(100vw - 30px);
+    }
+
+    .item .content {
+        top: clamp(8px, 2vh, 16px);
+        right: clamp(6px, 1.5vw, 12px);
+        left: auto;
+        width: clamp(140px, 65vw, 240px);
+        max-width: calc(100vw - 40px);
+    }
+
+    .content .name {
+        font-size: clamp(16px, 2.8vw, 26px);
+    }
+
+    .content .des {
+        font-size: clamp(9px, 1.2vw, 12px);
+        margin-top: clamp(2px, 0.8vw, 5px);
+        margin-bottom: 0;
+    }
+
+    .buttonc {
+        bottom: clamp(10px, 1.5vw, 18px);
+        left: clamp(10px, 2vw, 25px);
+    }
+
+    .buttonc button {
+        width: clamp(40px, 8vw, 48px);
+        height: clamp(28px, 5vw, 34px);
+        margin: 0 clamp(3px, 0.8vw, 5px);
+        font-size: clamp(11px, 1.5vw, 15px);
+    }
+} */
+
+/* Responsive Design for Mobile Phones (480px and below) */
+/* @media (max-width: 480px) {
+    .section {
+        padding: 3rem 5%;
+    }
+
+    #galleryCarousel .section h2 {
+        font-size: clamp(1.8rem, 5vw, 2.5rem);
+        margin-bottom: 1.5rem;
+    }
+
+    .containerc {
+        width: 100%;
+        height: clamp(420px, 72vh, 500px);
+        padding: 0;
+        margin: 0;
+        overflow: hidden;
+    }
+
+    .containerc .slide .item {
+        width: clamp(100px, 20vw, 160px);
+        height: clamp(100px, 20vw, 160px);
+    }
+
+    .slide .item:nth-child(3) {
+        left: clamp(calc(50% - 130px), calc(50% - 20vw), calc(50% - 100px));
+        width: clamp(75px, 12vw, 120px);
+        height: clamp(75px, 12vw, 120px);
+    }
+
+    .slide .item:nth-child(4) {
+        left: clamp(calc(50% - 30px), calc(50% + 2vw), calc(50% - 10px));
+        width: clamp(70px, 11vw, 110px);
+        height: clamp(70px, 11vw, 110px);
+    }
+
+    .slide .item:nth-child(5) {
+        left: clamp(calc(50% + 50px), calc(50% + 20vw), calc(50% + 80px));
+        width: clamp(65px, 10vw, 100px);
+        height: clamp(65px, 10vw, 100px);
+    }
+
+    .slide .item:nth-child(n + 6) {
+        left: clamp(calc(50% + 130px), calc(50% + 38vw), calc(50% + 160px));
+        width: clamp(60px, 9vw, 90px);
+        height: clamp(60px, 9vw, 90px);
+        opacity: 0.6;
+        max-width: calc(100vw - 20px);
+    }
+
+    .item .content {
+        top: clamp(10px, 2.5vh, 18px);
+        right: clamp(6px, 1.5vw, 12px);
+        left: auto;
+        width: clamp(130px, 60vw, 200px);
+        max-width: calc(100vw - 35px);
+    }
+
+    .content .name {
+        font-size: clamp(17px, 3.2vw, 24px);
+    }
+
+    .content .des {
+        font-size: clamp(10px, 1.3vw, 13px);
+        margin-top: clamp(3px, 0.8vw, 6px);
+        margin-bottom: 0;
+    }
+
+    .buttonc {
+        bottom: clamp(8px, 1.5vw, 14px);
+        left: clamp(8px, 1.5vw, 14px);
+    }
+
+    .buttonc button {
+        width: clamp(35px, 7vw, 44px);
+        height: clamp(24px, 4.5vw, 31px);
+        margin: 0 clamp(2px, 0.7vw, 4px);
+        font-size: clamp(10px, 1.3vw, 13px);
+    }
+} */

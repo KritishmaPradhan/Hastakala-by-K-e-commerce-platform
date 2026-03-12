@@ -205,80 +205,80 @@ function initHeroSparkles() {
     hero.addEventListener('mousemove', spawnSparkle);
 }
 
-// // Explore Work toggle section
-// function initExploreWorkToggle() {
-//     const toggleButton = document.getElementById('exploreWorkToggle');
-//     const panel = document.getElementById('exploreWorkPanel');
-//     const grid = document.getElementById('exploreWorkGrid');
+// Explore Work toggle section
+function initExploreWorkToggle() {
+    const toggleButton = document.getElementById('exploreWorkToggle');
+    const panel = document.getElementById('exploreWorkPanel');
+    const grid = document.getElementById('exploreWorkGrid');
 
-//     if (!toggleButton || !panel || !grid) return;
+    if (!toggleButton || !panel || !grid) return;
 
-//     const exploreItems = [
-//         { type: 'image', src: 'images/gallery12.jpeg', alt: 'kalesi aurat clip' },
-//         { type: 'image', src: 'images/gallery13.jpeg', alt: 'cute chicken' },
-//         { type: 'image', src: 'images/gallery14.jpeg', alt: 'puffed sunflower' },
-//         { type: 'image', src: 'images/gallery15.jpeg', alt: 'white pink daisy' },
-//         { type: 'image', src: 'images/gallery16.jpeg', alt: 'purple puffed' },
-//         { type: 'image', src: 'images/gallery17.jpeg', alt: 'pink puffed' },
-//         { type: 'image', src: 'images/gallery18.jpeg', alt: 'blue puffed' },
-//         { type: 'image', src: 'images/gallery19.jpeg', alt: 'twin octo' },
-//         { type: 'image', src: 'images/gallery20.jpeg', alt: 'happy sad octo' },
-//         { type: 'image', src: 'images/gallery21.jpeg', alt: 'white daisy' },
-//         { type: 'image', src: 'images/gallery22.jpeg', alt: 'sunflower' },
-//         { type: 'image', src: 'images/gallery23.jpeg', alt: 'bow pair' },
-//         { type: 'image', src: 'images/gallery24.jpeg', alt: 'flower vine white' },
-//         { type: 'image', src: 'images/gallery25.jpeg', alt: 'rose' },
-//     ];
+    const exploreItems = [
+        { type: 'image', src: 'images/gallery12.jpeg', alt: 'kalesi aurat clip' },
+        { type: 'image', src: 'images/gallery13.jpeg', alt: 'cute chicken' },
+        { type: 'image', src: 'images/gallery14.jpeg', alt: 'puffed sunflower' },
+        { type: 'image', src: 'images/gallery15.jpeg', alt: 'white pink daisy' },
+        { type: 'image', src: 'images/gallery16.jpeg', alt: 'purple puffed' },
+        { type: 'image', src: 'images/gallery17.jpeg', alt: 'pink puffed' },
+        { type: 'image', src: 'images/gallery18.jpeg', alt: 'blue puffed' },
+        { type: 'image', src: 'images/gallery19.jpeg', alt: 'twin octo' },
+        { type: 'image', src: 'images/gallery20.jpeg', alt: 'happy sad octo' },
+        { type: 'image', src: 'images/gallery21.jpeg', alt: 'white daisy' },
+        { type: 'image', src: 'images/gallery22.jpeg', alt: 'sunflower' },
+        { type: 'image', src: 'images/gallery23.jpeg', alt: 'bow pair' },
+        { type: 'image', src: 'images/gallery24.jpeg', alt: 'flower vine white' },
+        { type: 'image', src: 'images/gallery25.jpeg', alt: 'rose' },
+    ];
 
-//     const renderItems = () => {
-//         grid.innerHTML = exploreItems.map((item) => {
-//             if (item.type === 'image') {
-//                 return `
-//                     <article class="explore-item">
-//                         <img src="${item.src}" alt="${item.alt}">
-//                     </article>
-//                 `;
-//             }
+    const renderItems = () => {
+        grid.innerHTML = exploreItems.map((item) => {
+            if (item.type === 'image') {
+                return `
+                    <article class="explore-item">
+                        <img src="${item.src}" alt="${item.alt}">
+                    </article>
+                `;
+            }
 
-//             return `
-//                 <article class="explore-item">
-//                     <div class="explore-placeholder">${item.label}</div>
-//                 </article>
-//             `;
-//         }).join('');
-//     };
+            return `
+                <article class="explore-item">
+                    <div class="explore-placeholder">${item.label}</div>
+                </article>
+            `;
+        }).join('');
+    };
 
-//     const animateIn = () => {
-//         const cards = Array.from(grid.querySelectorAll('.explore-item'));
-//         cards.forEach((card, index) => {
-//             setTimeout(() => card.classList.add('show'), index * 70);
-//         });
-//     };
+    const animateIn = () => {
+        const cards = Array.from(grid.querySelectorAll('.explore-item'));
+        cards.forEach((card, index) => {
+            setTimeout(() => card.classList.add('show'), index * 70);
+        });
+    };
 
-//     toggleButton.addEventListener('click', () => {
-//         const isOpen = panel.classList.contains('is-open');
+    toggleButton.addEventListener('click', () => {
+        const isOpen = panel.classList.contains('is-open');
 
-//         if (isOpen) {
-//             panel.classList.remove('is-open');
-//             panel.setAttribute('aria-hidden', 'true');
-//             toggleButton.setAttribute('aria-expanded', 'false');
+        if (isOpen) {
+            panel.classList.remove('is-open');
+            panel.setAttribute('aria-hidden', 'true');
+            toggleButton.setAttribute('aria-expanded', 'false');
 
-//             setTimeout(() => {
-//                 if (!panel.classList.contains('is-open')) {
-//                     grid.innerHTML = '';
-//                 }
-//             }, 380);
-//             return;
-//         }
+            setTimeout(() => {
+                if (!panel.classList.contains('is-open')) {
+                    grid.innerHTML = '';
+                }
+            }, 380);
+            return;
+        }
 
-//         renderItems();
-//         panel.classList.add('is-open');
-//         panel.setAttribute('aria-hidden', 'false');
-//         toggleButton.setAttribute('aria-expanded', 'true');
+        renderItems();
+        panel.classList.add('is-open');
+        panel.setAttribute('aria-hidden', 'false');
+        toggleButton.setAttribute('aria-expanded', 'true');
 
-//         requestAnimationFrame(animateIn);
-//     });
-// }
+        requestAnimationFrame(animateIn);
+    });
+}
 
 // swipe gallery carousel
 const next = document.querySelector('.next');
