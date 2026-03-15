@@ -1,3 +1,16 @@
+//change Explore link target based on screen width
+function updateExploreLink() {
+    const exploreLink = document.getElementById("exploreLink");
+
+    if (window.innerWidth <= 605) {
+        exploreLink.href = "#explore-work";
+    } else {
+        exploreLink.href = "#galleryCarousel";
+    }
+}
+updateExploreLink();
+window.addEventListener("resize", updateExploreLink);
+
 // Gallery Carousel
 const galleryItems = [
     { image: 'images/gallery4.jpeg', title: 'crochet fruits keychain' },
