@@ -1,0 +1,162 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hastakala by K - Handmade Crochet Creations</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="logo">Hastakala by K</div>
+        <div class="nav-links" id="navLinks">
+            <i class="fa fa-times" onclick="hideMenu()"></i>
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#gallery">Gallery</a></li>
+                <li><a id="exploreLink">Explore</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
+        <div class="nav-auth">
+            <a href="#" class="btn-login">Login</a>
+            <a href="#" class="btn-signup">Sign Up</a>
+        </div>
+        <i class="fa fa-bars" onclick="showMenu()"></i>
+    </nav>
+
+    <!-- Instagram Button (Top Right) -->
+    <div class="instagram-section">
+        <a href="https://www.instagram.com/hastakala_by_K/" target="_blank" class="instagram-btn">
+            <i class="fab fa-instagram"></i>
+            <span>Browse on Instagram</span>
+        </a>
+    </div>
+
+    <!-- Home Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <img src="{% static 'images/logo-placeholder.png' %}" alt="Hastakala by K Logo" class="logo-img">
+            <h1>Hastakala by K</h1>
+            <p class="motto">{{ motto }}</p>
+            <div class="hero-buttons">
+                <a href="#gallery" class="btn btn-primary">Explore Collection</a>
+                <a href="#galleryCarousel" class="btn btn-secondary">Shop Now</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section id="gallery" class="section gallery">
+        <h2>Our Creations</h2>
+        <div class="gallery-carousel">
+            <div class="gallery-track" id="galleryTrack">
+                <!-- Gallery items will be duplicated by JavaScript for infinite scroll -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Gallery Section -->
+    <section class="section explore-work" id="galleryCarousel">
+        <h2>Our Gallery</h2>
+        <div class="explore-work-wrap">
+            <div class="explore-work-panel">
+                <div class="explore-work-grid">
+                    {% for product in products %}
+                    <article class="explore-item">
+                        <div style="background-image: url('{% static product.image_path %}'); width: 100%; height: 100%; background-size: cover; background-position: center; display: flex; align-items: flex-end;">
+                            <div class="product-info">
+                                <div class="product-name">{{ product.name }}</div>
+                                <div class="product-description">{{ product.description }}</div>
+                            </div>
+                        </div>
+                    </article>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="section">
+        <h2>About Us</h2>
+        <div class="about-content">
+            <div class="about-text">
+                <span style="font-family: 'Great Vibes', 'Allura', 'Segoe Script', cursive; font-size: 40px;">Hi! I am Kritishma</span><br><br>
+                <p>{{ about_intro }}</p>
+                <p>{{ about_description }}</p>
+            </div>
+            <div class="about-image">
+                <img src="{% static 'images/ownerpic.jpg' %}" alt="Owner's Photo">
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="section contact">
+        <h2>Get In Touch</h2>
+        <div class="contact-container">
+            <div class="contact-info">
+                <h3>Contact Information</h3>
+                <p><i class="fas fa-envelope"></i>
+                    <a href="mailto:{{ owner_email }}">{{ owner_email }}</a>
+                </p>
+                <p><i class="fab fa-instagram"></i>
+                    <a href="https://www.instagram.com/hastakala_by_K/" target="_blank">@hastakala_by_K</a>
+                </p>
+            </div>
+
+            <form method="POST" id="contactForm" class="contact-form">
+                {% csrf_token %}
+                <!-- Name Field -->
+                <div class="form-group">
+                    <input type="text" name="name" placeholder="Your Name" required autocomplete="name">
+                </div>
+            
+                <!-- Email Field -->
+                <div class="form-group">
+                    <input type="email" name="email" placeholder="Your Email" required autocomplete="email">
+                </div>
+            
+                <!-- Message Field -->
+                <div class="form-group">
+                    <textarea name="message" placeholder="Your Message" required autocomplete="off"></textarea>
+                </div>  
+            
+                <!-- Consent Checkbox -->
+                <div class="form-group consent">
+                    <label>
+                        <input type="checkbox" required autocomplete="off">
+                        I agree that my submitted information will be sent to the owner of this website for contact purposes only.
+                    </label>
+                </div>
+            
+                <!-- Submit Button -->
+                <div class="form-group">
+                    <button type="submit" class="btn">Send Message</button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <p>© 2026 Hastakala by K — All rights reserved. Licensed under CC BY-NC 4.0.</p>
+            <div class="social-links">
+                <a href="https://www.instagram.com/hastakala_by_K/" target="_blank"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/script.js' %}"></script>
+</body>
+</html>
