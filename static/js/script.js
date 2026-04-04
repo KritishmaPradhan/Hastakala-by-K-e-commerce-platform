@@ -1,27 +1,14 @@
-//change Explore link target based on screen width
-function updateExploreLink() {
-    const exploreLink = document.getElementById("exploreLink");
-
-    if (window.innerWidth <= 605) {
-        exploreLink.href = "#explore-work";
-    } else {
-        exploreLink.href = "#galleryCarousel";
-    }
-}
-updateExploreLink();
-window.addEventListener("resize", updateExploreLink);
-
 // Gallery Carousel
 const galleryItems = [
-    { image: '/static/images/gallery4.jpeg', title: 'crochet fruits keychain' },
-    { image: '/static/images/gallery5.jpeg', title: 'puffed flowers' },
-    { image: '/static/images/gallery6.jpeg', title: 'flower vine' },
-    { image: '/static/images/gallery7.jpeg', title: 'red flower brooch' },
-    { image: '/static/images/gallery8.jpeg', title: 'flower keychain' },
-    { image: '/static/images/gallery4.jpeg', title: 'crochet fruits keychain' },
-    { image: '/static/images/gallery9.jpeg', title: 'flower keychain' },
-    { image: '/static/images/gallery10.jpeg', title: 'lavender keychain' },
-    { image: '/static/images/gallery11.jpeg', title: 'rose coaster' },
+    { image: '/static/images/gallery4.jpeg', title: 'Kalesi aurat Angry clip' },
+    { image: '/static/images/gallery5.jpeg', title: 'White Flower vine' },
+    { image: '/static/images/gallery6.jpeg', title: 'Puffed sunflower' },
+    { image: '/static/images/gallery7.jpeg', title: 'White pink daisy' },
+    { image: '/static/images/gallery8.jpeg', title: 'Purple puffed' },
+    { image: '/static/images/gallery9.jpeg', title: 'Pink puffed' },
+    { image: '/static/images/gallery10.jpeg', title: 'Blue puffed' },
+    { image: '/static/images/gallery11.jpeg', title: 'Twin octo' },
+    { image: '/static/images/gallery12.jpeg', title: 'Happy sad octo' },
 ];
 
 // Initialize gallery carousel
@@ -83,8 +70,8 @@ document.addEventListener('DOMContentLoaded', function() {
         initExploreWorkToggle();
     }
     
-    // Set initial styles for animation
-    const elements = document.querySelectorAll('.about-content, .gallery-item, .contact-container > *');
+    // Set initial styles for animation (but NOT for gallery items - they have their own animation)
+    const elements = document.querySelectorAll('.about-content, .contact-container > *');
     elements.forEach(element => {
         element.style.opacity = '0';
         element.style.transform = 'translateY(20px)';
@@ -160,7 +147,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Add animation on scroll
 const animateOnScroll = function() {
-    const elements = document.querySelectorAll('.about-content, .gallery-item, .contact-container > *');
+    const elements = document.querySelectorAll('.about-content, .contact-container > *');
     
     elements.forEach(element => {
         const elementPosition = element.getBoundingClientRect().top;
@@ -218,68 +205,10 @@ function initHeroSparkles() {
     hero.addEventListener('mousemove', spawnSparkle);
 }
 
-// Explore Work section - Always visible
-function initExploreWorkToggle() {
-    const grid = document.getElementById('exploreWorkGrid');
-    
-    // Only initialize if the first explore-work grid exists and is empty
-    if (!grid || grid.children.length > 0) return;
-
-    const exploreItems = [
-        { type: 'image', src: '/static/images/gallery12.jpeg', alt: 'kalesi aurat clip' },
-        { type: 'image', src: '/static/images/gallery13.jpeg', alt: 'cute chicken' },
-        { type: 'image', src: '/static/images/gallery14.jpeg', alt: 'puffed sunflower' },
-        { type: 'image', src: '/static/images/gallery15.jpeg', alt: 'white pink daisy' },
-        { type: 'image', src: '/static/images/gallery16.jpeg', alt: 'purple puffed' },
-        { type: 'image', src: '/static/images/gallery17.jpeg', alt: 'pink puffed' },
-        { type: 'image', src: '/static/images/gallery18.jpeg', alt: 'blue puffed' },
-        { type: 'image', src: '/static/images/gallery19.jpeg', alt: 'twin octo' },
-        { type: 'image', src: '/static/images/gallery20.jpeg', alt: 'happy sad octo' },
-        { type: 'image', src: '/static/images/gallery21.jpeg', alt: 'white daisy' },
-        { type: 'image', src: '/static/images/gallery22.jpeg', alt: 'sunflower' },
-        { type: 'image', src: '/static/images/gallery23.jpeg', alt: 'bow pair' },
-        { type: 'image', src: '/static/images/gallery24.jpeg', alt: 'flower vine white' },
-        { type: 'image', src: '/static/images/gallery25.jpeg', alt: 'rose' },
-    ];
-
-    // Render items
-    grid.innerHTML = exploreItems.map((item) => {
-        if (item.type === 'image') {
-            return `
-                <article class="explore-item show">
-                    <img src="${item.src}" alt="${item.alt}">
-                </article>
-            `;
-        }
-        return `
-            <article class="explore-item show">
-                <div class="explore-placeholder">${item.label}</div>
-            </article>
-        `;
-    }).join('');
-}
-
 // Animate all explore items on scroll
 function animateExploreItems() {
     const items = document.querySelectorAll('.explore-item');
     items.forEach((item, index) => {
         setTimeout(() => item.classList.add('show'), index * 70);
-    });
-}
-
-// swipe gallery carousel
-const next = document.querySelector('.next');
-const prev = document.querySelector('.prev');
-const slide = document.querySelector('.slide');
-
-if (next && prev && slide) {
-    next.addEventListener('click', function(){
-        const items = slide.querySelectorAll('.item');
-        if (items.length) slide.appendChild(items[0]);
-    });
-
-    prev.addEventListener('click', function(){
-        const items = slide.querySelectorAll('.item');
-        if (items.length) slide.prepend(items[items.length - 1]); // here the length of items = 6
     });
 }

@@ -1,47 +1,7 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hastakala by K - Handmade Crochet Creations</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-</head>
-<body>
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="logo">Hastakala by K</div>
-        <div class="nav-links" id="navLinks">
-            <i class="fa fa-times" onclick="hideMenu()"></i>
-            <ul>
-                <li><a href="#home">Home</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="#gallery">Gallery</a></li>
-                <li><a id="exploreLink">Explore</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
-        </div>
-        <div class="nav-auth">
-            <a href="#" class="btn-login">Login</a>
-            <a href="#" class="btn-signup">Sign Up</a>
-        </div>
-        <i class="fa fa-bars" onclick="showMenu()"></i>
-    </nav>
 
-    <!-- Instagram Button (Top Right) -->
-    <div class="instagram-section">
-        <a href="https://www.instagram.com/hastakala_by_K/" target="_blank" class="instagram-btn">
-            <i class="fab fa-instagram"></i>
-            <span>Browse on Instagram</span>
-        </a>
-    </div>
-
-    <!-- Home Section -->
+{% block content %}
     <section id="home" class="hero">
         <div class="hero-content">
             <img src="{% static 'images/logo-placeholder.png' %}" alt="Hastakala by K Logo" class="logo-img">
@@ -49,7 +9,7 @@
             <p class="motto">{{ motto }}</p>
             <div class="hero-buttons">
                 <a href="#gallery" class="btn btn-primary">Explore Collection</a>
-                <a href="#galleryCarousel" class="btn btn-secondary">Shop Now</a>
+                <a href="#galleryCarouselProduct" class="btn btn-secondary">Shop Now</a>
             </div>
         </div>
     </section>
@@ -65,7 +25,7 @@
     </section>
 
     <!-- Products Gallery Section -->
-    <section class="section explore-work" id="galleryCarousel">
+    <section class="section explore-work" id="galleryCarouselProduct">
         <h2>Our Gallery</h2>
         <div class="explore-work-wrap">
             <div class="explore-work-panel">
@@ -147,16 +107,4 @@
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer>
-        <div class="footer-content">
-            <p>© 2026 Hastakala by K — All rights reserved. Licensed under CC BY-NC 4.0.</p>
-            <div class="social-links">
-                <a href="https://www.instagram.com/hastakala_by_K/" target="_blank"><i class="fab fa-instagram"></i></a>
-            </div>
-        </div>
-    </footer>
-
-    <script src="{% static 'js/script.js' %}"></script>
-</body>
-</html>
+{% endblock %}

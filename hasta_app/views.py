@@ -87,3 +87,19 @@ def home(request):
         'owner_email': 'pradhankritishma@gmail.com',
     }
     return render(request, 'store/index.html', context)
+
+
+def login(request):
+    """Login page view"""
+    if request.method == 'POST':
+        # TODO: Add authentication logic here
+        pass
+    return render(request, 'store/login.html')
+
+
+def signup(request):
+    """Signup page view"""
+    if request.method == 'POST':
+        # TODO: Add user registration logic here
+        pass
+    return render(request, 'store/signup.html')

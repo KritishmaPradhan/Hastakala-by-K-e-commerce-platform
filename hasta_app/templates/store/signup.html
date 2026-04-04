@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Sign Up - Hastakala by K{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/signup.css' %}">
+{% endblock %}
+
+{% block navbar %}
+<!-- Simplified Navbar for Auth Pages -->
+<nav class="navbar">
+    <div class="logo">
+        <a href="{% url 'hasta_app:home' %}" style="text-decoration: none; color: inherit;">Hastakala by K</a>
+    </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<section class="auth-page">
+    <div class="auth-container">
+        <div class="auth-box">
+            <div class="auth-header">
+                <h2>Create Account</h2>
+                <p>Join our crochet community</p>
+            </div>
+
+            <form class="auth-form" method="POST">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="full_name">Full Name</label>
+                    <input 
+                        type="text" 
+                        id="full_name" 
+                        name="full_name" 
+                        placeholder="Enter your full name" 
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        placeholder="Enter your email" 
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        placeholder="Create a strong password" 
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm_password">Confirm Password</label>
+                    <input 
+                        type="password" 
+                        id="confirm_password" 
+                        name="confirm_password" 
+                        placeholder="Confirm your password" 
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone Number (Optional)</label>
+                    <input 
+                        type="tel" 
+                        id="phone" 
+                        name="phone" 
+                        placeholder="Enter your phone number"
+                    >
+                </div>
+
+                <div class="terms-agree">
+                    <label>
+                        <input type="checkbox" name="terms" required>
+                        I agree to the Terms and Conditions
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    Create Account
+                </button>
+            </form>
+
+            <div class="auth-footer">
+                <p>Already have an account? 
+                    <a href="{% url 'hasta_app:login' %}" class="auth-link">Login here</a>
+                </p>
+            </div>
+
+            <div class="auth-divider">
+                <span>Or sign up with</span>
+            </div>
+
+            <div class="social-login">
+                <button class="social-btn google-btn">
+                    <i class="fab fa-google"></i> Google
+                </button>
+                <button class="social-btn facebook-btn">
+                    <i class="fab fa-facebook"></i> Facebook
+                </button>
+            </div>
+        </div>
+
+        <!-- Decorative side illustration -->
+        <div class="auth-illustration">
+            <div class="illustration-content">
+                <i class="fas fa-hands" style="font-size: 4rem; color: #f67280; margin-bottom: 1rem;"></i>
+                <h3>Join Hastakala by K</h3>
+                <p>Discover handmade crochet</p>
+                <p style="font-size: 0.9rem; margin-top: 1.5rem; opacity: 0.8;">Experience the art of handcrafted creativity. Each piece is made with love and attention to detail.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block footer %}
+<!-- No footer on auth pages -->
+{% endblock %}
