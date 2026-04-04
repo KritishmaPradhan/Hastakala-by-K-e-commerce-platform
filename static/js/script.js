@@ -1,15 +1,18 @@
-// Gallery Carousel
-const galleryItems = [
-    { image: '/static/images/gallery4.jpeg', title: 'Fruit Collection' },
-    { image: '/static/images/gallery5.jpeg', title: 'Puffed flower' },
-    { image: '/static/images/gallery6.jpeg', title: 'Flower Vine' },
-    { image: '/static/images/gallery7.jpeg', title: 'Red flower Brooch' },
-    { image: '/static/images/gallery8.jpeg', title: 'White daisy keyring' },
-    { image: '/static/images/gallery9.jpeg', title: 'Blue Flower Keyring' },
-    { image: '/static/images/gallery10.jpeg', title: 'Lavender Keyring' },
-    { image: '/static/images/gallery11.jpeg', title: 'Rose Coaster' },
-    { image: '/static/images/gallery12.jpeg', title: 'Kaleshi aurat clip' },
-];
+// Gallery Carousel - Now uses data from database
+// Fallback to hardcoded items if database data is not available
+const galleryItems = typeof window.carouselItemsFromDB !== 'undefined' && window.carouselItemsFromDB.length > 0 
+    ? window.carouselItemsFromDB 
+    : [
+        { image: '/static/images/gallery4.jpeg', title: 'Fruit Collection' },
+        { image: '/static/images/gallery5.jpeg', title: 'Puffed flower' },
+        { image: '/static/images/gallery6.jpeg', title: 'Flower Vine' },
+        { image: '/static/images/gallery7.jpeg', title: 'Red flower Brooch' },
+        { image: '/static/images/gallery8.jpeg', title: 'White daisy keyring' },
+        { image: '/static/images/gallery9.jpeg', title: 'Blue Flower Keyring' },
+        { image: '/static/images/gallery10.jpeg', title: 'Lavender Keyring' },
+        { image: '/static/images/gallery11.jpeg', title: 'Rose Coaster' },
+        { image: '/static/images/gallery12.jpeg', title: 'Kaleshi aurat clip' },
+    ];
 
 // Initialize gallery carousel
 function initGalleryCarousel() {

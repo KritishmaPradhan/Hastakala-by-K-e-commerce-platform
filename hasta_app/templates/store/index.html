@@ -14,15 +14,42 @@
         </div>
     </section>
 
-    <!-- Gallery Section -->
+    <!-- Gallery Section with carousel from database -->
     <section id="gallery" class="section gallery">
         <h2>Our Creations</h2>
         <div class="gallery-carousel">
             <div class="gallery-track" id="galleryTrack">
-                <!-- Gallery items will be duplicated by JavaScript for infinite scroll -->
+                <!-- Gallery items will be rendered from database via JavaScript -->
             </div>
         </div>
     </section>
+
+    <!-- Embed featured products data for carousel JavaScript -->
+    <script type="application/json" id="carouselData">
+        [
+            {% for product in featured_products %}
+            {
+                "image": "{% static product.image_path %}",
+                "title": "{{ product.name|escapejs }}",
+                "description": "{{ product.description|escapejs }}"
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ]
+    </script>
+    <script>
+        // Parse carousel data from JSON script tag
+        try {
+            const carouselDataElement = document.getElementById('carouselData');
+            if (carouselDataElement && carouselDataElement.textContent.trim()) {
+                window.carouselItemsFromDB = JSON.parse(carouselDataElement.textContent);
+            } else {
+                window.carouselItemsFromDB = [];
+            }
+        } catch (e) {
+            console.warn('Failed to parse carousel data:', e);
+            window.carouselItemsFromDB = [];
+        }
+    </script>
 
     <!-- Products Gallery Section -->
     <section class="section explore-work" id="galleryCarouselProduct">
