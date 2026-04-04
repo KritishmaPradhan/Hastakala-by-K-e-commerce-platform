@@ -31,8 +31,34 @@
             </ul>
         </div>
         <div class="nav-auth">
+            {% if user.is_authenticated %}
+            <!-- User Profile Section -->
+            <div class="user-profile-menu">
+                <button class="profile-btn" onclick="toggleProfileDropdown()">
+                    <i class="fas fa-user-circle"></i>
+                    <span class="username">{{ user.first_name|default:user.username }}</span>
+                </button>
+                <div class="profile-dropdown" id="profileDropdown">
+                    <a href="{% url 'hasta_app:home' %}" class="dropdown-item">
+                        <i class="fas fa-home"></i> Home
+                    </a>
+                    <a href="#" class="dropdown-item">
+                        <i class="fas fa-box"></i> My Orders
+                    </a>
+                    <a href="#" class="dropdown-item">
+                        <i class="fas fa-user"></i> My Profile
+                    </a>
+                    <hr class="dropdown-divider">
+                    <a href="{% url 'hasta_app:logout' %}" class="dropdown-item logout-item">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
+            </div>
+            {% else %}
+            <!-- Guest Section -->
             <a href="{% url 'hasta_app:login' %}" class="btn-login">Login</a>
             <a href="{% url 'hasta_app:signup' %}" class="btn-signup">Sign Up</a>
+            {% endif %}
         </div>
         <i class="fa fa-bars" onclick="showMenu()"></i>
     </nav>
@@ -45,6 +71,31 @@
         </a>
     </div>
     {% endblock %}
+
+    <!-- Messages Display -->
+    {% if messages %}
+    <div class="messages-container">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}" role="alert">
+            <button type="button" class="close-btn" onclick="this.parentElement.style.display='none';">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="message-content">
+                {% if message.tags == 'error' %}
+                    <i class="fas fa-exclamation-circle"></i>
+                {% elif message.tags == 'success' %}
+                    <i class="fas fa-check-circle"></i>
+                {% elif message.tags == 'warning' %}
+                    <i class="fas fa-exclamation-triangle"></i>
+                {% else %}
+                    <i class="fas fa-info-circle"></i>
+                {% endif %}
+                {{ message }}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
 
     <!-- Main Content -->
     <main>

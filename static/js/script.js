@@ -1,14 +1,14 @@
 // Gallery Carousel
 const galleryItems = [
-    { image: '/static/images/gallery4.jpeg', title: 'Kalesi aurat Angry clip' },
-    { image: '/static/images/gallery5.jpeg', title: 'White Flower vine' },
-    { image: '/static/images/gallery6.jpeg', title: 'Puffed sunflower' },
-    { image: '/static/images/gallery7.jpeg', title: 'White pink daisy' },
-    { image: '/static/images/gallery8.jpeg', title: 'Purple puffed' },
-    { image: '/static/images/gallery9.jpeg', title: 'Pink puffed' },
-    { image: '/static/images/gallery10.jpeg', title: 'Blue puffed' },
-    { image: '/static/images/gallery11.jpeg', title: 'Twin octo' },
-    { image: '/static/images/gallery12.jpeg', title: 'Happy sad octo' },
+    { image: '/static/images/gallery4.jpeg', title: 'Fruit Collection' },
+    { image: '/static/images/gallery5.jpeg', title: 'Puffed flower' },
+    { image: '/static/images/gallery6.jpeg', title: 'Flower Vine' },
+    { image: '/static/images/gallery7.jpeg', title: 'Red flower Brooch' },
+    { image: '/static/images/gallery8.jpeg', title: 'White daisy keyring' },
+    { image: '/static/images/gallery9.jpeg', title: 'Blue Flower Keyring' },
+    { image: '/static/images/gallery10.jpeg', title: 'Lavender Keyring' },
+    { image: '/static/images/gallery11.jpeg', title: 'Rose Coaster' },
+    { image: '/static/images/gallery12.jpeg', title: 'Kaleshi aurat clip' },
 ];
 
 // Initialize gallery carousel
@@ -92,6 +92,24 @@ function showMenu() {
 function hideMenu() {
     navLinks.style.right = '-200px';
 }
+
+// Profile Dropdown Toggle
+function toggleProfileDropdown() {
+    const dropdown = document.getElementById('profileDropdown');
+    if (dropdown) {
+        dropdown.classList.toggle('active');
+    }
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(event) {
+    const profileMenu = document.querySelector('.user-profile-menu');
+    const dropdown = document.getElementById('profileDropdown');
+    
+    if (profileMenu && dropdown && !profileMenu.contains(event.target)) {
+        dropdown.classList.remove('active');
+    }
+});
 
 // Smooth Scrolling for Navigation Links
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
