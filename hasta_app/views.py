@@ -29,6 +29,27 @@ def home(request):
     return render(request, 'store/index.html', context)
 
 
+def product_detail(request, product_id):
+    """Product detail page view"""
+    try:
+        product = Product.objects.get(id=product_id, is_active=True)
+    except Product.DoesNotExist:
+        messages.error(request, 'Product not found.')
+        return redirect('hasta_app:home')
+    
+    # Get related products (same category)
+    related_products = Product.objects.filter(
+        category=product.category,
+        is_active=True
+    ).exclude(id=product_id)[:4]
+    
+    context = {
+        'product': product,
+        'related_products': related_products,
+    }
+    return render(request, 'store/product_detail.html', context)
+
+
 @require_http_methods(["GET"])
 def api_carousel_items(request):
     """API endpoint that returns featured products for carousel"""

@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/product_detail.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="product-detail-page">
+    <!-- Back Button -->
+    <div class="back-button-container">
+        <a href="{% url 'hasta_app:home' %}#galleryCarouselProduct" class="back-button">
+            <i class="fas fa-arrow-left"></i> Back to Gallery
+        </a>
+    </div>
+
+    <div class="product-detail-container">
+        <!-- Product Image Section -->
+        <div class="product-image-section">
+            <div class="product-image-wrapper">
+                <img src="{% static product.image_path %}" alt="{{ product.name }}" class="product-main-image">
+            </div>
+        </div>
+
+        <!-- Product Info Section -->
+        <div class="product-info-section">
+            <h1 class="product-detail-title">{{ product.name }}</h1>
+            
+            <!-- Rating -->
+            <div class="product-rating">
+                <div class="stars">
+                    {% for i in "12345" %}
+                        {% if i|add:0 <= product.average_rating %}
+                            <i class="fas fa-star"></i>
+                        {% elif i|add:0 <= product.average_rating|add:0.5 %}
+                            <i class="fas fa-star-half-alt"></i>
+                        {% else %}
+                            <i class="far fa-star"></i>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <span class="rating-value">({{ product.total_reviews }} reviews)</span>
+            </div>
+
+            <!-- Price -->
+            <div class="product-price">
+                <h2 class="price-value">₹{{ product.price }}</h2>
+                <p class="stock-status {% if product.stock_quantity > 0 %}in-stock{% else %}out-of-stock{% endif %}">
+                    {% if product.stock_quantity > 0 %}
+                        In Stock ({{ product.stock_quantity }} available)
+                    {% else %}
+                        Out of Stock
+                    {% endif %}
+                </p>
+            </div>
+
+            <!-- Description -->
+            <div class="product-description">
+                <h3>Description</h3>
+                <p>{{ product.description }}</p>
+            </div>
+
+            <!-- Category -->
+            <div class="product-category">
+                <label>Category:</label>
+                <span class="category-badge">{{ product.get_category_display }}</span>
+            </div>
+
+            <!-- Add to Cart Button -->
+            <div class="product-actions">
+                {% if product.stock_quantity > 0 %}
+                    <button class="btn btn-add-to-cart" onclick="addToCart('{{ product.id }}')">
+                        <i class="fas fa-shopping-cart"></i> Add to Cart
+                    </button>
+                {% else %}
+                    <button class="btn btn-out-of-stock" disabled>
+                        Out of Stock
+                    </button>
+                {% endif %}
+                <button class="btn btn-wishlist" onclick="addToWishlist('{{ product.id }}')">
+                    <i class="far fa-heart"></i> Wishlist
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Related Products Section -->
+    {% if related_products %}
+    <section class="related-products">
+        <h2>Related Products</h2>
+        <div class="related-products-grid">
+            {% for rel_product in related_products %}
+            <div class="product-card-mini">
+                <div class="product-image-mini">
+                    <img src="{% static rel_product.image_path %}" alt="{{ rel_product.name }}">
+                </div>
+                <div class="product-info-mini">
+                    <h4>{{ rel_product.name }}</h4>
+                    <p class="price-mini">₹{{ rel_product.price }}</p>
+                    <a href="{% url 'hasta_app:product_detail' rel_product.id %}" class="view-btn">View Details</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+</section>
+
+<script>
+    function addToCart(productId) {
+        alert('Product added to cart! (Feature coming soon)');
+    }
+
+    function addToWishlist(productId) {
+        alert('Added to wishlist! (Feature coming soon)');
+    }
+</script>
+{% endblock %}

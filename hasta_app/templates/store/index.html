@@ -55,19 +55,27 @@
     <section class="section explore-work" id="galleryCarouselProduct">
         <h2>Our Gallery</h2>
         <div class="explore-work-wrap">
-            <div class="explore-work-panel">
-                <div class="explore-work-grid">
+            <div class="products-gallery-container">
+                <div class="products-grid" id="productsGrid">
                     {% for product in products %}
-                    <article class="explore-item">
-                        <div style="background-image: url('{% static product.image_path %}'); width: 100%; height: 100%; background-size: cover; background-position: center; display: flex; align-items: flex-end;">
-                            <div class="product-info">
-                                <div class="product-name">{{ product.name }}</div>
-                                <div class="product-description">{{ product.description }}</div>
-                            </div>
+                    <div class="product-card" data-product-index="{{ forloop.counter }}">
+                        <div class="product-card-image">
+                            <a href="{% url 'hasta_app:product_detail' product.id %}">
+                                <img src="{% static product.image_path %}" alt="{{ product.name }}" loading="lazy">
+                            </a>
                         </div>
-                    </article>
+                        <div class="product-card-body">
+                            <h3 class="product-card-name">{{ product.name }}</h3>
+                            <p class="product-card-price">₹{{ product.price }}</p>
+                            <p class="product-card-description">{{ product.description|truncatewords:10 }}</p>
+                            <a href="{% url 'hasta_app:product_detail' product.id %}" class="product-card-link">View Details</a>
+                        </div>
+                    </div>
                     {% endfor %}
                 </div>
+            </div>
+            <div class="gallery-actions">
+                <button class="btn btn-show-more" id="showMoreBtn" onclick="toggleShowMore()">Show More</button>
             </div>
         </div>
     </section>
@@ -133,5 +141,72 @@
             </form>
         </div>
     </section>
+
+    <script>
+        // Gallery Show More functionality
+        const ITEMS_PER_ROW = 4;
+        const INITIAL_ROWS = 3;
+        let isExpanded = false;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeGallery();
+        });
+
+        function initializeGallery() {
+            const productsGrid = document.getElementById('productsGrid');
+            const showMoreBtn = document.getElementById('showMoreBtn');
+            const productCards = productsGrid.querySelectorAll('.product-card');
+            
+            const itemsToShow = ITEMS_PER_ROW * INITIAL_ROWS;
+            
+            // Hide items beyond initial rows
+            productCards.forEach((card, index) => {
+                if (index >= itemsToShow) {
+                    card.classList.add('hidden');
+                }
+            });
+
+            // Show/hide button based on total items
+            if (productCards.length <= itemsToShow) {
+                showMoreBtn.style.display = 'none';
+            }
+        }
+
+        function toggleShowMore() {
+            const productsGrid = document.getElementById('productsGrid');
+            const showMoreBtn = document.getElementById('showMoreBtn');
+            const productCards = productsGrid.querySelectorAll('.product-card');
+            
+            const itemsToShow = ITEMS_PER_ROW * INITIAL_ROWS;
+            
+            isExpanded = !isExpanded;
+            
+            productCards.forEach((card, index) => {
+                if (index >= itemsToShow) {
+                    if (isExpanded) {
+                        card.classList.remove('hidden');
+                        setTimeout(() => {
+                            card.classList.add('show');
+                        }, 10);
+                    } else {
+                        card.classList.remove('show');
+                        setTimeout(() => {
+                            card.classList.add('hidden');
+                        }, 300);
+                    }
+                }
+            });
+            
+            // Update button text
+            showMoreBtn.textContent = isExpanded ? 'Show Less' : 'Show More';
+            
+            // Smooth scroll to gallery
+            if (isExpanded) {
+                setTimeout(() => {
+                    document.getElementById('galleryCarouselProduct').scrollIntoView({ behavior: 'smooth' });
+                }, 300);
+            }
+        }
+    </script>
 
 {% endblock %}
