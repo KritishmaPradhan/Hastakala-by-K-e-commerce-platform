@@ -23,10 +23,14 @@
             <div class="auth-header">
                 <h2>Create Account</h2>
                 <p>Join our crochet community</p>
+                <button type="button" class="close-btn" onclick="handleClose()">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
 
             <form class="auth-form" method="POST">
                 {% csrf_token %}
+                {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
                 
                 <div class="form-group">
                     <label for="full_name">Full Name</label>
@@ -96,7 +100,7 @@
 
             <div class="auth-footer">
                 <p>Already have an account? 
-                    <a href="{% url 'hasta_app:login' %}" class="auth-link">Login here</a>
+                    <a href="{% url 'hasta_app:login' %}{% if next %}?next={{ next }}{% endif %}" class="auth-link">Login here</a>
                 </p>
             </div>
 
@@ -125,6 +129,25 @@
         </div>
     </div>
 </section>
+
+<script>
+    function handleClose() {
+        // Check if there's a 'next' parameter to redirect back to product page
+        const urlParams = new URLSearchParams(window.location.search);
+        const nextUrl = urlParams.get('next');
+        
+        if (nextUrl) {
+            window.location.href = nextUrl;
+        } else {
+            // Go back to previous page or home
+            if (document.referrer) {
+                window.history.back();
+            } else {
+                window.location.href = "{% url 'hasta_app:home' %}";
+            }
+        }
+    }
+</script>
 
 {% endblock %}
 

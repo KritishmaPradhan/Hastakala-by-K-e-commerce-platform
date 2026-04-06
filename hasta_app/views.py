@@ -69,17 +69,21 @@ def api_carousel_items(request):
 
 def login(request):
     """Login page view with authentication"""
-    # If already logged in, redirect to home
+    # If already logged in, redirect appropriately
     if request.user.is_authenticated:
+        next_url = request.GET.get('next') or request.POST.get('next')
+        if next_url:
+            return redirect(next_url)
         return redirect('hasta_app:home')
     
     if request.method == 'POST':
         email = request.POST.get('email', '').strip()
         password = request.POST.get('password', '')
+        next_url = request.POST.get('next', '')
         
         if not email or not password:
             messages.error(request, 'Please provide both email and password.')
-            return render(request, 'store/login.html')
+            return render(request, 'store/login.html', {'next': next_url})
         
         # Find user by email
         try:
@@ -90,19 +94,27 @@ def login(request):
             if user is not None:
                 auth_login(request, user)
                 messages.success(request, f'Welcome back, {user.first_name or user.username}!')
+                # Redirect to next URL if provided, otherwise home
+                if next_url:
+                    return redirect(next_url)
                 return redirect('hasta_app:home')
             else:
                 messages.error(request, 'Invalid email or password.')
         except User.DoesNotExist:
             messages.error(request, 'Invalid email or password.')
     
-    return render(request, 'store/login.html')
+    next_url = request.GET.get('next', '')
+    context = {'next': next_url}
+    return render(request, 'store/login.html', context)
 
 
 def signup(request):
     """Signup page view with user registration"""
-    # If already logged in, redirect to home
+    # If already logged in, redirect appropriately
     if request.user.is_authenticated:
+        next_url = request.GET.get('next') or request.POST.get('next')
+        if next_url:
+            return redirect(next_url)
         return redirect('hasta_app:home')
     
     if request.method == 'POST':
@@ -112,28 +124,29 @@ def signup(request):
         password = request.POST.get('password', '')
         confirm_password = request.POST.get('confirm_password', '')
         terms = request.POST.get('terms', '')
+        next_url = request.POST.get('next', '')
         
         # Validation
         if not all([full_name, email, password, confirm_password]):
             messages.error(request, 'Please fill in all required fields.')
-            return render(request, 'store/signup.html')
+            return render(request, 'store/signup.html', {'next': next_url})
         
         if password != confirm_password:
             messages.error(request, 'Passwords do not match.')
-            return render(request, 'store/signup.html')
+            return render(request, 'store/signup.html', {'next': next_url})
         
         if len(password) < 8:
             messages.error(request, 'Password must be at least 8 characters long.')
-            return render(request, 'store/signup.html')
+            return render(request, 'store/signup.html', {'next': next_url})
         
         if not terms:
             messages.error(request, 'You must agree to the Terms and Conditions.')
-            return render(request, 'store/signup.html')
+            return render(request, 'store/signup.html', {'next': next_url})
         
         # Check if email already exists
         if User.objects.filter(email=email).exists():
             messages.error(request, 'An account with this email already exists.')
-            return render(request, 'store/signup.html')
+            return render(request, 'store/signup.html', {'next': next_url})
         
         try:
             # Create username from email
@@ -161,17 +174,26 @@ def signup(request):
             # Create user profile
             profile = UserProfile.objects.create(user=user, phone_number=phone)
             
-            messages.success(request, 'Account created successfully! Please log in.')
-            return redirect('hasta_app:login')
+            # Auto-login the user after signup
+            user = authenticate(request, username=user.username, password=password)
+            if user is not None:
+                auth_login(request, user)
+                messages.success(request, f'Welcome {user.first_name or user.username}! Account created successfully.')
+                # Redirect to next URL if provided, otherwise home
+                if next_url:
+                    return redirect(next_url)
+                return redirect('hasta_app:home')
         
         except IntegrityError:
             messages.error(request, 'An error occurred. Please try again.')
-            return render(request, 'store/signup.html')
+            return render(request, 'store/signup.html', {'next': next_url})
         except Exception as e:
             messages.error(request, f'An unexpected error occurred: {str(e)}')
-            return render(request, 'store/signup.html')
+            return render(request, 'store/signup.html', {'next': next_url})
     
-    return render(request, 'store/signup.html')
+    next_url = request.GET.get('next', '')
+    context = {'next': next_url}
+    return render(request, 'store/signup.html', context)
 
 
 def logout(request):

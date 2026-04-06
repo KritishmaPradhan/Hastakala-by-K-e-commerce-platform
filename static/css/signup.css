@@ -30,6 +30,7 @@
 .auth-header {
     text-align: center;
     margin-bottom: 2rem;
+    position: relative;
 }
 
 .auth-header h2 {
@@ -42,6 +43,30 @@
 .auth-header p {
     color: #999;
     font-size: 0.95rem;
+}
+
+.close-btn {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background: linear-gradient(135deg, #f8b195, #f67280);
+    color: white;
+    border: none;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(246, 114, 128, 0.3);
+}
+
+.close-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 8px 20px rgba(246, 114, 128, 0.4);
 }
 
 .auth-form {

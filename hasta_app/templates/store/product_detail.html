@@ -66,19 +66,26 @@
                 <span class="category-badge">{{ product.get_category_display }}</span>
             </div>
 
-            <!-- Add to Cart Button -->
+            <!-- Add to Cart and Buy Now Buttons -->
             <div class="product-actions">
                 {% if product.stock_quantity > 0 %}
-                    <button class="btn btn-add-to-cart" onclick="addToCart('{{ product.id }}')">
+                    <button class="btn btn-add-to-cart" onclick="handleAddToCart()">
                         <i class="fas fa-shopping-cart"></i> Add to Cart
+                    </button>
+                    <button class="btn btn-buy-now" onclick="handleBuyNow()">
+                        <i class="fas fa-bolt"></i> Buy Now
                     </button>
                 {% else %}
                     <button class="btn btn-out-of-stock" disabled>
                         Out of Stock
                     </button>
                 {% endif %}
-                <button class="btn btn-wishlist" onclick="addToWishlist('{{ product.id }}')">
-                    <i class="far fa-heart"></i> Wishlist
+            </div>
+
+            <!-- Wishlist Button -->
+            <div class="product-wishlist">
+                <button class="btn btn-wishlist" onclick="handleAddToWishlist()">
+                    <i class="far fa-heart"></i> Add to Wishlist
                 </button>
             </div>
         </div>
@@ -107,12 +114,41 @@
 </section>
 
 <script>
-    function addToCart(productId) {
-        alert('Product added to cart! (Feature coming soon)');
+    // Initialize authentication status
+    var isUserAuthenticated = false;
+    var loginUrl = "{% url 'hasta_app:login' %}";
+    var currentProductUrl = window.location.href;
+</script>
+
+{% if user.is_authenticated %}
+<script>
+    isUserAuthenticated = true;
+</script>
+{% endif %}
+
+<script>
+    function handleAddToCart() {
+        if (!isUserAuthenticated) {
+            window.location.href = loginUrl + "?next=" + encodeURIComponent(currentProductUrl);
+        } else {
+            alert('Product added to cart! (Feature coming soon)');
+        }
     }
 
-    function addToWishlist(productId) {
-        alert('Added to wishlist! (Feature coming soon)');
+    function handleBuyNow() {
+        if (!isUserAuthenticated) {
+            window.location.href = loginUrl + "?next=" + encodeURIComponent(currentProductUrl);
+        } else {
+            alert('Buy now functionality coming soon!');
+        }
+    }
+
+    function handleAddToWishlist() {
+        if (!isUserAuthenticated) {
+            window.location.href = loginUrl + "?next=" + encodeURIComponent(currentProductUrl);
+        } else {
+            alert('Added to wishlist! (Feature coming soon)');
+        }
     }
 </script>
 {% endblock %}
