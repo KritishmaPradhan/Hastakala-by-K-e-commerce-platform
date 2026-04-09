@@ -60,6 +60,24 @@
                     {% for product in products %}
                     <div class="product-card" data-product-index="{{ forloop.counter }}">
                         <div class="product-card-image">
+                            <!-- Wishlist Heart Icon -->
+                            <div class="wishlist-icon-container">
+                                {% if user.is_authenticated %}
+                                    <button class="wishlist-heart btn-heart" 
+                                            data-product-id="{{ product.id }}" 
+                                            onclick="toggleWishlist(event, this.dataset.productId)"
+                                            title="Add to wishlist">
+                                        <i class="far fa-heart"></i>
+                                    </button>
+                                {% else %}
+                                    <a href="{% url 'hasta_app:login' %}?next={% url 'hasta_app:home' %}" 
+                                       class="wishlist-heart btn-heart" 
+                                       title="Login to add to wishlist">
+                                        <i class="far fa-heart"></i>
+                                    </a>
+                                {% endif %}
+                            </div>
+                            
                             <a href="{% url 'hasta_app:product_detail' product.id %}">
                                 <img src="{% static product.image_path %}" alt="{{ product.name }}" loading="lazy">
                             </a>
@@ -207,6 +225,124 @@
                 }, 300);
             }
         }
+
+        // Wishlist functionality
+        async function toggleWishlist(event, productId) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            productId = parseInt(productId);
+            const btn = event.target.closest('.wishlist-heart');
+            
+            try {
+                const response = await fetch('{% url "hasta_app:toggle_wishlist" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken'),
+                    },
+                    body: JSON.stringify({ product_id: productId })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const icon = btn.querySelector('i');
+                    
+                    if (data.action === 'added') {
+                        // Change to filled heart
+                        icon.classList.remove('far');
+                        icon.classList.add('fas');
+                        btn.classList.add('wishlisted');
+                        btn.title = 'Remove from wishlist';
+                        showWishlistNotification(data.message, 'success');
+                    } else {
+                        // Change to empty heart
+                        icon.classList.remove('fas');
+                        icon.classList.add('far');
+                        btn.classList.remove('wishlisted');
+                        btn.title = 'Add to wishlist';
+                        showWishlistNotification(data.message, 'info');
+                    }
+                } else {
+                    showWishlistNotification('Error: ' + data.message, 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showWishlistNotification('An error occurred', 'error');
+            }
+        }
+
+        async function checkWishlistStatus() {
+            // Only check for authenticated users
+            const isAuthenticatedStr = "{% if user.is_authenticated %}true{% else %}false{% endif %}";
+            const isAuthenticated = isAuthenticatedStr === 'true';
+            if (!isAuthenticated) return;
+
+            const hearts = document.querySelectorAll('.wishlist-heart[data-product-id]');
+            
+            for (let btn of hearts) {
+                const productId = btn.dataset.productId;
+                try {
+                    const response = await fetch(`/api/wishlist/check/${productId}/`);
+                    const data = await response.json();
+                    
+                    if (data.success && data.is_wishlisted) {
+                        const icon = btn.querySelector('i');
+                        icon.classList.remove('far');
+                        icon.classList.add('fas');
+                        btn.classList.add('wishlisted');
+                        btn.title = 'Remove from wishlist';
+                    }
+                } catch (error) {
+                    console.error('Error checking wishlist status:', error);
+                }
+            }
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function showWishlistNotification(message, type) {
+            // Create a simple notification
+            const notification = document.createElement('div');
+            notification.className = `wishlist-notification notification-${type}`;
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                <span>${message}</span>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Show notification
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 10);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Check wishlist status on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeGallery();
+            checkWishlistStatus();
+        });
     </script>
 
 {% endblock %}

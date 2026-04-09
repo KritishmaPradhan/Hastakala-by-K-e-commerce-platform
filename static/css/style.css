@@ -1160,6 +1160,111 @@ footer {
     transform: translateY(-2px);
 }
 
+/* Wishlist Heart Icon */
+.wishlist-icon-container {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10;
+}
+
+.btn-heart,
+.wishlist-heart {
+    background-color: rgba(255, 255, 255, 0.485);
+    color: #e74c3c;
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    padding: 0;
+    text-decoration: none;
+    flex-shrink: 0;
+}
+
+.btn-heart:hover,
+.wishlist-heart:hover {
+    background-color: #fff;
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+}
+
+.btn-heart.wishlisted i,
+.wishlist-heart.wishlisted i {
+    color: #e74c3c;
+}
+
+.btn-heart.wishlisted,
+.wishlist-heart.wishlisted {
+    background-color: rgba(231, 76, 60, 0.1);
+}
+
+/* Wishlist Notification */
+.wishlist-notification {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    background-color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-weight: 600;
+    z-index: 2000;
+    animation: slideIn 0.3s ease;
+    opacity: 0;
+    transform: translateX(400px);
+    pointer-events: none;
+}
+
+.wishlist-notification.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(400px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.wishlist-notification.notification-success {
+    border-left: 4px solid #27ae60;
+}
+
+.wishlist-notification.notification-success i {
+    color: #27ae60;
+}
+
+.wishlist-notification.notification-error {
+    border-left: 4px solid #e74c3c;
+}
+
+.wishlist-notification.notification-error i {
+    color: #e74c3c;
+}
+
+.wishlist-notification.notification-info {
+    border-left: 4px solid #3498db;
+}
+
+.wishlist-notification.notification-info i {
+    color: #3498db;
+}
+
 .gallery-actions {
     display: flex;
     justify-content: center;

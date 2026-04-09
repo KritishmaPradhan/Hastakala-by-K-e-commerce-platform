@@ -8,7 +8,7 @@ from django.contrib import messages
 from django.db import IntegrityError
 import json
 
-from .models import UserProfile, Product
+from .models import UserProfile, Product, Wishlist
 
 
 def home(request):
@@ -201,3 +201,77 @@ def logout(request):
     auth_logout(request)
     messages.success(request, 'You have been logged out successfully.')
     return redirect('hasta_app:home')
+
+
+@login_required(login_url='hasta_app:login')
+def wishlist_page(request):
+    """Wishlist page view - displays all wishlisted items"""
+    wishlist, created = Wishlist.objects.get_or_create(user=request.user)
+    wishlisted_products = wishlist.products.filter(is_active=True)
+    
+    context = {
+        'wishlisted_products': wishlisted_products,
+    }
+    return render(request, 'store/wishlist.html', context)
+
+
+@require_http_methods(["POST"])
+@login_required(login_url='hasta_app:login')
+def toggle_wishlist(request):
+    """AJAX endpoint to add/remove product from wishlist"""
+    try:
+        data = json.loads(request.body)
+        product_id = data.get('product_id')
+        
+        if not product_id:
+            return JsonResponse({'success': False, 'message': 'Product ID is required'})
+        
+        try:
+            product = Product.objects.get(id=product_id, is_active=True)
+        except Product.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'Product not found'})
+        
+        # Get or create user's wishlist
+        wishlist, created = Wishlist.objects.get_or_create(user=request.user)
+        
+        # Check if product is already wishlisted
+        is_wishlisted = wishlist.is_product_wishlisted(product)
+        
+        if is_wishlisted:
+            wishlist.remove_product(product)
+            return JsonResponse({
+                'success': True,
+                'action': 'removed',
+                'message': f'{product.name} removed from wishlist'
+            })
+        else:
+            wishlist.add_product(product)
+            return JsonResponse({
+                'success': True,
+                'action': 'added',
+                'message': f'{product.name} added to wishlist'
+            })
+    
+    except json.JSONDecodeError:
+        return JsonResponse({'success': False, 'message': 'Invalid request'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': f'Error: {str(e)}'})
+
+
+@require_http_methods(["GET"])
+@login_required(login_url='hasta_app:login')
+def check_wishlist(request, product_id):
+    """AJAX endpoint to check if product is in user's wishlist"""
+    try:
+        product = Product.objects.get(id=product_id, is_active=True)
+        wishlist, created = Wishlist.objects.get_or_create(user=request.user)
+        is_wishlisted = wishlist.is_product_wishlisted(product)
+        
+        return JsonResponse({
+            'success': True,
+            'is_wishlisted': is_wishlisted
+        })
+    except Product.DoesNotExist:
+        return JsonResponse({'success': False, 'message': 'Product not found'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': f'Error: {str(e)}'})

@@ -78,3 +78,30 @@ class Product(models.Model):
     
     def __str__(self):
         return self.name
+
+
+class Wishlist(models.Model):
+    """Wishlist model for storing user's wishlist items"""
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='wishlist')
+    products = models.ManyToManyField(Product, related_name='wishlisted_by', blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name = 'Wishlist'
+        verbose_name_plural = 'Wishlists'
+    
+    def __str__(self):
+        return f"{self.user.username}'s Wishlist"
+    
+    def add_product(self, product):
+        """Add a product to wishlist"""
+        self.products.add(product)
+    
+    def remove_product(self, product):
+        """Remove a product from wishlist"""
+        self.products.remove(product)
+    
+    def is_product_wishlisted(self, product):
+        """Check if a product is in wishlist"""
+        return self.products.filter(id=product.id).exists()

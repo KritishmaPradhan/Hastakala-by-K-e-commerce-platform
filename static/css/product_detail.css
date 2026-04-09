@@ -204,6 +204,17 @@
         color: white;
     }
 
+    .btn-wishlist.wishlisted {
+        background: var(--accent-color);
+        color: white;
+        border-color: var(--accent-color);
+    }
+
+    .btn-wishlist.wishlisted:hover {
+        background: #a85a7d;
+        border-color: #a85a7d;
+    }
+
     .btn-out-of-stock {
         flex: 1;
         padding: 15px 30px;

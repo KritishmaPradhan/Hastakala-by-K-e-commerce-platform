@@ -1,0 +1,231 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Wishlist - Hastakala by K{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/wishlist.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="wishlist-page">
+    <div class="wishlist-container">
+        <!-- Header -->
+        <div class="wishlist-header">
+            <h1>
+                <i class="fas fa-heart"></i>
+                My Wishlist
+                {% if wishlisted_products %}
+                    <span class="wishlist-count">{{ wishlisted_products.count }}</span>
+                {% endif %}
+            </h1>
+            <p>Your favorite handmade creations saved for later</p>
+        </div>
+
+        <!-- Empty Wishlist -->
+        {% if not wishlisted_products %}
+        <div class="wishlist-empty">
+            <i class="fas fa-heart-broken"></i>
+            <h2>Your wishlist is empty</h2>
+            <p>Start adding your favorite products to your wishlist!</p>
+            <a href="{% url 'hasta_app:home' %}#galleryCarouselProduct" class="btn btn-primary" style="padding: 0.8rem 2rem; font-weight: 600;">
+                <i class="fas fa-shopping-bag"></i> Explore Collection
+            </a>
+        </div>
+        {% else %}
+
+        <!-- Wishlist Items -->
+        <div class="wishlist-items">
+            {% for product in wishlisted_products %}
+            <div class="wishlist-item" data-product-id="{{ product.id }}">
+                <!-- Item Header (Always Visible) -->
+                <div class="wishlist-item-header">
+                    <div class="wishlist-item-image">
+                        <img src="{% static product.image_path %}" alt="{{ product.name }}">
+                    </div>
+                    <div class="wishlist-item-info">
+                        <h3>{{ product.name }}</h3>
+                        <div class="wishlist-item-price">₹{{ product.price }}</div>
+                        
+                        <!-- Rating -->
+                        <div class="wishlist-item-rating">
+                            <div class="stars">
+                                {% for i in "12345" %}
+                                    {% if i|add:0 <= product.average_rating %}
+                                        <i class="fas fa-star"></i>
+                                    {% elif i|add:0 <= product.average_rating|add:0.5 %}
+                                        <i class="fas fa-star-half-alt"></i>
+                                    {% else %}
+                                        <i class="far fa-star"></i>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <span>({{ product.total_reviews }} reviews)</span>
+                        </div>
+
+                        <!-- Truncated Description -->
+                        <p class="product-card-description" style="color: var(--text-light); margin: 0.5rem 0;">
+                            {{ product.description|truncatewords:15 }}
+                        </p>
+
+                        <!-- Actions -->
+                        <div class="wishlist-item-actions">
+                            <a href="{% url 'hasta_app:product_detail' product.id %}" class="btn-view-detail">
+                                <i class="fas fa-eye"></i> View Details
+                            </a>
+                            <button class="btn-remove" onclick="removeFromWishlist('{{ product.id }}')">
+                                <i class="fas fa-trash"></i> Remove
+                            </button>
+                        </div>
+
+                        <!-- Toggle Full Description -->
+                        <button class="wishlist-toggle-detail" onclick="toggleDetails(this)">
+                            <span>Show more</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Item Details (Expandable) -->
+                <div class="wishlist-item-details">
+                    <div class="wishlist-item-description">
+                        <h4>Full Description</h4>
+                        <p>{{ product.description }}</p>
+
+                        <!-- Product Metadata -->
+                        <div class="wishlist-item-meta">
+                            {% if product.category %}
+                            <div class="wishlist-item-meta-item">
+                                <strong>Category</strong>
+                                <span>{{ product.get_category_display }}</span>
+                            </div>
+                            {% endif %}
+
+                            {% if product.material %}
+                            <div class="wishlist-item-meta-item">
+                                <strong>Material</strong>
+                                <span>{{ product.material }}</span>
+                            </div>
+                            {% endif %}
+
+                            {% if product.color %}
+                            <div class="wishlist-item-meta-item">
+                                <strong>Color</strong>
+                                <span>{{ product.color }}</span>
+                            </div>
+                            {% endif %}
+
+                            {% if product.size %}
+                            <div class="wishlist-item-meta-item">
+                                <strong>Size</strong>
+                                <span>{{ product.size }}</span>
+                            </div>
+                            {% endif %}
+
+                            <div class="wishlist-item-meta-item">
+                                <strong>Stock Available</strong>
+                                <span>
+                                    {% if product.stock_quantity > 0 %}
+                                        {{ product.stock_quantity }} units
+                                    {% else %}
+                                        <span style="color: #e74c3c;">Out of stock</span>
+                                    {% endif %}
+                                </span>
+                            </div>
+
+                            {% if product.customizable %}
+                            <div class="wishlist-item-meta-item">
+                                <strong>Customizable</strong>
+                                <span><i class="fas fa-check" style="color: #27ae60;"></i> Yes</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<script>
+    function toggleDetails(button) {
+        const wishlistItem = button.closest('.wishlist-item');
+        wishlistItem.classList.toggle('expanded');
+        
+        // Update button text
+        const span = button.querySelector('span');
+        if (wishlistItem.classList.contains('expanded')) {
+            span.textContent = 'Show less';
+        } else {
+            span.textContent = 'Show more';
+        }
+    }
+
+    function removeFromWishlist(productId) {
+        if (!confirm('Are you sure you want to remove this item from your wishlist?')) {
+            return;
+        }
+
+        fetch('{% url "hasta_app:toggle_wishlist" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || getCookie('csrftoken'),
+            },
+            body: JSON.stringify({ product_id: productId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Remove the item with a fade-out animation
+                const wishlistItem = document.querySelector(`[data-product-id="${productId}"]`);
+                if (wishlistItem) {
+                    wishlistItem.style.opacity = '0';
+                    wishlistItem.style.transform = 'translateY(-20px)';
+                    setTimeout(() => {
+                        wishlistItem.remove();
+                        
+                        // If no items left, reload page to show empty state
+                        const items = document.querySelectorAll('.wishlist-item');
+                        if (items.length === 0) {
+                            setTimeout(() => {
+                                location.reload();
+                            }, 300);
+                        } else {
+                            // Update count
+                            const count = document.querySelector('.wishlist-count');
+                            if (count) {
+                                const newCount = items.length;
+                                count.textContent = newCount;
+                            }
+                        }
+                    }, 300);
+                }
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while updating your wishlist.');
+        });
+    }
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
+{% endblock %}

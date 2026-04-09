@@ -118,6 +118,7 @@
     var isUserAuthenticated = false;
     var loginUrl = "{% url 'hasta_app:login' %}";
     var currentProductUrl = window.location.href;
+    var currentProductId = parseInt("{{ product.id }}");
 </script>
 
 {% if user.is_authenticated %}
@@ -143,12 +144,108 @@
         }
     }
 
-    function handleAddToWishlist() {
+    async function handleAddToWishlist() {
         if (!isUserAuthenticated) {
             window.location.href = loginUrl + "?next=" + encodeURIComponent(currentProductUrl);
-        } else {
-            alert('Added to wishlist! (Feature coming soon)');
+            return;
+        }
+
+        const btn = document.querySelector('.btn-wishlist');
+        const icon = btn.querySelector('i');
+
+        try {
+            const response = await fetch('{% url "hasta_app:toggle_wishlist" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+                body: JSON.stringify({ product_id: currentProductId })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                if (data.action === 'added') {
+                    icon.classList.remove('far');
+                    icon.classList.add('fas');
+                    btn.textContent = '';
+                    btn.innerHTML = '<i class="fas fa-heart"></i> Added to Wishlist';
+                    btn.classList.add('wishlisted');
+                    showNotification(data.message, 'success');
+                } else {
+                    icon.classList.remove('fas');
+                    icon.classList.add('far');
+                    btn.textContent = '';
+                    btn.innerHTML = '<i class="far fa-heart"></i> Add to Wishlist';
+                    btn.classList.remove('wishlisted');
+                    showNotification(data.message, 'info');
+                }
+            } else {
+                showNotification('Error: ' + data.message, 'error');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showNotification('An error occurred', 'error');
         }
     }
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    function showNotification(message, type) {
+        const notification = document.createElement('div');
+        notification.className = `wishlist-notification notification-${type}`;
+        notification.innerHTML = `
+            <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+            <span>${message}</span>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.classList.add('show');
+        }, 10);
+        
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
+    }
+
+    // Check wishlist status on page load
+    async function checkWishlistStatusDetail() {
+        if (!isUserAuthenticated) return;
+
+        try {
+            const response = await fetch(`{% url "hasta_app:check_wishlist" 0 %}`.replace('0', currentProductId));
+            const data = await response.json();
+            
+            if (data.success && data.is_wishlisted) {
+                const btn = document.querySelector('.btn-wishlist');
+                const icon = btn.querySelector('i');
+                icon.classList.remove('far');
+                icon.classList.add('fas');
+                btn.innerHTML = '<i class="fas fa-heart"></i> Added to Wishlist';
+                btn.classList.add('wishlisted');
+            }
+        } catch (error) {
+            console.error('Error checking wishlist status:', error);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', checkWishlistStatusDetail);
 </script>
 {% endblock %}

@@ -10,4 +10,7 @@ urlpatterns = [
     path('signup/', views.signup, name='signup'),
     path('logout/', views.logout, name='logout'),
     path('api/carousel/', views.api_carousel_items, name='api_carousel'),
+    path('wishlist/', views.wishlist_page, name='wishlist'),
+    path('api/wishlist/toggle/', views.toggle_wishlist, name='toggle_wishlist'),
+    path('api/wishlist/check/<int:product_id>/', views.check_wishlist, name='check_wishlist'),
 ]
