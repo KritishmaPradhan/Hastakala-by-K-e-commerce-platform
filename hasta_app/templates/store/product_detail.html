@@ -132,7 +132,7 @@
         if (!isUserAuthenticated) {
             window.location.href = loginUrl + "?next=" + encodeURIComponent(currentProductUrl);
         } else {
-            alert('Product added to cart! (Feature coming soon)');
+            addToCart(currentProductId);
         }
     }
 
@@ -225,12 +225,38 @@
         }, 3000);
     }
 
+    async function addToCart(productId) {
+        try {
+            const response = await fetch('{% url "hasta_app:add_to_cart" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+                body: JSON.stringify({ product_id: productId, quantity: 1 })
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                showNotification(data.message, 'success');
+                setTimeout(() => {
+                    window.location.href = '{% url "hasta_app:cart" %}';
+                }, 1500);
+            } else {
+                showNotification('Error: ' + data.message, 'error');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showNotification('An error occurred', 'error');
+        }
+    }
+
     // Check wishlist status on page load
     async function checkWishlistStatusDetail() {
         if (!isUserAuthenticated) return;
 
         try {
-            const response = await fetch(`{% url "hasta_app:check_wishlist" 0 %}`.replace('0', currentProductId));
+            const response = await fetch(`/api/wishlist/check/${currentProductId}/`);
             const data = await response.json();
             
             if (data.success && data.is_wishlisted) {

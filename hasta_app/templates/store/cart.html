@@ -1,0 +1,526 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Shopping Cart - Hastakala by K{% endblock %}
+
+{% block extra_css %}
+<style>
+    .cart-page {
+        margin-top: 100px;
+        min-height: calc(100vh - 100px);
+        background-color: #f8f9fa;
+        padding: 2rem 5%;
+    }
+
+    .cart-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .cart-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .cart-header h1 {
+        font-size: 2.5rem;
+        color: var(--dark-color);
+        margin-bottom: 0.5rem;
+    }
+
+    .cart-header p {
+        color: var(--text-light);
+        font-size: 1.1rem;
+    }
+
+    .cart-empty {
+        text-align: center;
+        padding: 3rem 2rem;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .cart-empty i {
+        font-size: 4rem;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+        display: block;
+    }
+
+    .cart-empty h2 {
+        color: var(--dark-color);
+        margin-bottom: 1rem;
+    }
+
+    .cart-empty p {
+        color: var(--text-light);
+        margin-bottom: 2rem;
+    }
+
+    .cart-content {
+        display: grid;
+        grid-template-columns: 1fr 350px;
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .cart-items {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .cart-item {
+        display: flex;
+        padding: 1.5rem;
+        border-bottom: 1px solid #eee;
+        align-items: center;
+        gap: 1.5rem;
+        transition: background-color 0.3s ease;
+    }
+
+    .cart-item:last-child {
+        border-bottom: none;
+    }
+
+    .cart-item:hover {
+        background-color: #fafafa;
+    }
+
+    .cart-item-image {
+        width: 120px;
+        height: 120px;
+        border-radius: 8px;
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+
+    .cart-item-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .cart-item-info {
+        flex: 1;
+    }
+
+    .cart-item-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--dark-color);
+        margin-bottom: 0.5rem;
+        text-decoration: none;
+    }
+
+    .cart-item-name:hover {
+        color: var(--secondary-color);
+    }
+
+    .cart-item-price {
+        font-size: 1.2rem;
+        color: var(--secondary-color);
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+    }
+
+    .cart-item-stock {
+        font-size: 0.9rem;
+        color: var(--text-light);
+        margin-bottom: 1rem;
+    }
+
+    .cart-item-controls {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .quantity-control {
+        display: flex;
+        align-items: center;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        overflow: hidden;
+    }
+
+    .qty-btn {
+        background-color: #f0f0f0;
+        border: none;
+        width: 35px;
+        height: 35px;
+        cursor: pointer;
+        font-size: 1.1rem;
+        transition: background-color 0.3s;
+    }
+
+    .qty-btn:hover {
+        background-color: var(--primary-color);
+        color: white;
+    }
+
+    .qty-input {
+        width: 50px;
+        height: 35px;
+        border: none;
+        text-align: center;
+        font-weight: 600;
+    }
+
+    .cart-item-total {
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: var(--dark-color);
+        min-width: 100px;
+        text-align: right;
+    }
+
+    .remove-btn {
+        background-color: #e74c3c;
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: background-color 0.3s;
+    }
+
+    .remove-btn:hover {
+        background-color: #c0392b;
+    }
+
+    .cart-sidebar {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        height: fit-content;
+        position: sticky;
+        top: 120px;
+    }
+
+    .order-summary h3 {
+        font-size: 1.3rem;
+        color: var(--dark-color);
+        margin-bottom: 1.5rem;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+        font-size: 1rem;
+    }
+
+    .summary-row.total {
+        border-top: 2px solid var(--primary-color);
+        padding-top: 1rem;
+        font-size: 1.3rem;
+        font-weight: bold;
+        color: var(--dark-color);
+    }
+
+    .checkout-btn {
+        width: 100%;
+        padding: 1rem;
+        margin-top: 1.5rem;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .checkout-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(246, 114, 128, 0.3);
+    }
+
+    .continue-shopping {
+        width: 100%;
+        padding: 0.8rem;
+        margin-top: 1rem;
+        background-color: #f0f0f0;
+        color: var(--dark-color);
+        border: none;
+        border-radius: 5px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        text-decoration: none;
+        display: block;
+        text-align: center;
+    }
+
+    .continue-shopping:hover {
+        background-color: #e0e0e0;
+    }
+
+    @media (max-width: 768px) {
+        .cart-page {
+            padding: 1rem;
+        }
+
+        .cart-content {
+            grid-template-columns: 1fr;
+        }
+
+        .cart-item {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .cart-item-info {
+            width: 100%;
+        }
+
+        .cart-item-controls {
+            justify-content: center;
+            width: 100%;
+        }
+
+        .cart-item-total {
+            text-align: center;
+        }
+
+        .cart-sidebar {
+            position: static;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="cart-page">
+    <div class="cart-container">
+        <!-- Header -->
+        <div class="cart-header">
+            <h1>
+                <i class="fas fa-shopping-cart"></i>
+                Shopping Cart
+            </h1>
+            <p>Review your items before checkout</p>
+        </div>
+
+        <!-- Empty Cart -->
+        {% if not cart_items %}
+        <div class="cart-empty">
+            <i class="fas fa-shopping-bag"></i>
+            <h2>Your cart is empty</h2>
+            <p>Start shopping and add items to your cart!</p>
+            <a href="{% url 'hasta_app:home' %}#galleryCarouselProduct" class="btn btn-primary" style="padding: 0.8rem 2rem; font-weight: 600; display: inline-block;">
+                <i class="fas fa-shopping-bag"></i> Continue Shopping
+            </a>
+        </div>
+        {% else %}
+
+        <!-- Cart Content -->
+        <div class="cart-content">
+            <!-- Cart Items -->
+            <div class="cart-items">
+                {% for item in cart_items %}
+                <div class="cart-item" data-product-id="{{ item.product.id }}">
+                    <div class="cart-item-image">
+                        <img src="{% static item.product.image_path %}" alt="{{ item.product.name }}">
+                    </div>
+
+                    <div class="cart-item-info">
+                        <a href="{% url 'hasta_app:product_detail' item.product.id %}" class="cart-item-name">
+                            {{ item.product.name }}
+                        </a>
+                        <div class="cart-item-price">₹{{ item.product.price }}</div>
+                        <div class="cart-item-stock">
+                            {% if item.product.stock_quantity > 0 %}
+                                <span style="color: #27ae60;"><i class="fas fa-check"></i> In Stock</span>
+                            {% else %}
+                                <span style="color: #e74c3c;"><i class="fas fa-times"></i> Out of Stock</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="cart-item-controls">
+                            <div class="quantity-control">
+                                <button class="qty-btn" onclick="decrementQty('{{ item.product.id }}')">−</button>
+                                <input type="number" class="qty-input" value="{{ item.quantity }}" 
+                                       data-product-id="{{ item.product.id }}" 
+                                       onchange="updateQty('{{ item.product.id }}', this.value)" 
+                                       min="1" max="{{ item.product.stock_quantity }}">
+                                <button class="qty-btn" onclick="incrementQty('{{ item.product.id }}')">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="cart-item-total">
+                        ₹{{ item.get_item_total }}
+                    </div>
+
+                    <button class="remove-btn" onclick="removeFromCart('{{ item.product.id }}')">
+                        <i class="fas fa-trash"></i> Remove
+                    </button>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Order Summary Sidebar -->
+            <div class="cart-sidebar">
+                <div class="order-summary">
+                    <h3>Order Summary</h3>
+                    
+                    <div class="summary-row">
+                        <span>Subtotal:</span>
+                        <span>₹{{ total_price }}</span>
+                    </div>
+                    
+                    <div class="summary-row">
+                        <span>Shipping:</span>
+                        <span>Free</span>
+                    </div>
+                    
+                    <div class="summary-row">
+                        <span>Tax:</span>
+                        <span>₹0</span>
+                    </div>
+                    
+                    <div class="summary-row total">
+                        <span>Total:</span>
+                        <span id="total-price">₹{{ total_price }}</span>
+                    </div>
+
+                    <button class="checkout-btn" onclick="handleCheckout()">
+                        <i class="fas fa-lock"></i> Proceed to Checkout
+                    </button>
+                    
+                    <a href="{% url 'hasta_app:home' %}#galleryCarouselProduct" class="continue-shopping">
+                        <i class="fas fa-arrow-left"></i> Continue Shopping
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<script>
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    async function updateQty(productId, quantity) {
+        quantity = parseInt(quantity);
+        if (quantity < 1) quantity = 1;
+        
+        try {
+            const response = await fetch('{% url "hasta_app:update_cart_item" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+                body: JSON.stringify({ product_id: productId, quantity: quantity })
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                updateCartDisplay();
+            } else {
+                alert('Error: ' + data.message);
+                location.reload();
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred');
+        }
+    }
+
+    function incrementQty(productId) {
+        const input = document.querySelector(`input[data-product-id="${productId}"]`);
+        let qty = parseInt(input.value) + 1;
+        input.value = qty;
+        updateQty(productId, qty);
+    }
+
+    function decrementQty(productId) {
+        const input = document.querySelector(`input[data-product-id="${productId}"]`);
+        let qty = parseInt(input.value) - 1;
+        if (qty < 1) qty = 1;
+        input.value = qty;
+        updateQty(productId, qty);
+    }
+
+    async function removeFromCart(productId) {
+        if (!confirm('Remove this item from cart?')) return;
+
+        try {
+            const response = await fetch('{% url "hasta_app:remove_from_cart" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+                body: JSON.stringify({ product_id: productId })
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                const cartItem = document.querySelector(`[data-product-id="${productId}"]`);
+                if (cartItem) {
+                    cartItem.style.opacity = '0';
+                    cartItem.style.transform = 'translateY(-20px)';
+                    setTimeout(() => {
+                        cartItem.remove();
+                        const items = document.querySelectorAll('.cart-item');
+                        if (items.length === 0) {
+                            location.reload();
+                        } else {
+                            updateCartDisplay();
+                        }
+                    }, 300);
+                }
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred');
+        }
+    }
+
+    async function updateCartDisplay() {
+        try {
+            const response = await fetch('{% url "hasta_app:get_cart_info" %}');
+            const data = await response.json();
+            if (data.success) {
+                document.getElementById('total-price').textContent = '₹' + data.total_price;
+                const summaryRows = document.querySelectorAll('.summary-row');
+                if (summaryRows.length > 0) {
+                    summaryRows[0].querySelector('span:last-child').textContent = '₹' + data.total_price;
+                    if (summaryRows.length > 2) {
+                        summaryRows[2].querySelector('span:last-child').textContent = '₹' + data.total_price;
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    function handleCheckout() {
+        alert('Checkout functionality coming soon!');
+    }
+</script>
+{% endblock %}

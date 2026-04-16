@@ -105,3 +105,82 @@ class Wishlist(models.Model):
     def is_product_wishlisted(self, product):
         """Check if a product is in wishlist"""
         return self.products.filter(id=product.id).exists()
+
+
+class Cart(models.Model):
+    """Shopping cart model for storing user's cart items"""
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='cart')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name = 'Cart'
+        verbose_name_plural = 'Carts'
+    
+    def __str__(self):
+        return f"{self.user.username}'s Cart"
+    
+    def get_total_price(self):
+        """Calculate total price of all items in cart"""
+        return sum(item.get_item_total() for item in self.items.all())
+    
+    def get_total_items(self):
+        """Get total number of items in cart"""
+        return sum(item.quantity for item in self.items.all())
+    
+    def add_product(self, product, quantity=1):
+        """Add a product to cart or increase quantity if exists"""
+        cart_item, created = self.items.get_or_create(product=product)
+        if not created:
+            cart_item.quantity += quantity
+        else:
+            cart_item.quantity = quantity
+        cart_item.save()
+        return cart_item
+    
+    def remove_product(self, product):
+        """Remove a product from cart"""
+        self.items.filter(product=product).delete()
+    
+    def update_quantity(self, product, quantity):
+        """Update quantity of a product in cart"""
+        if quantity <= 0:
+            self.remove_product(product)
+        else:
+            cart_item = self.items.get(product=product)
+            cart_item.quantity = quantity
+            cart_item.save()
+
+
+class CartItem(models.Model):
+    """Individual item in a shopping cart"""
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+    added_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name = 'Cart Item'
+        verbose_name_plural = 'Cart Items'
+        unique_together = ('cart', 'product')
+    
+    def __str__(self):
+        return f"{self.product.name} (x{self.quantity}) in {self.cart.user.username}'s cart"
+    
+    def get_item_total(self):
+        """Calculate total price for this item"""
+        return self.product.price * self.quantity
+    
+    def clean(self):
+        """Validate quantity is within stock"""
+        if self.quantity > self.product.stock_quantity:
+            from django.core.exceptions import ValidationError
+            raise ValidationError(f"Quantity cannot exceed stock ({self.product.stock_quantity})")
+    
+    def save(self, *args, **kwargs):
+        """Auto-delete if quantity is 0"""
+        if self.quantity <= 0:
+            self.delete()
+        else:
+            super().save(*args, **kwargs)

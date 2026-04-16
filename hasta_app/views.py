@@ -8,7 +8,7 @@ from django.contrib import messages
 from django.db import IntegrityError
 import json
 
-from .models import UserProfile, Product, Wishlist
+from .models import UserProfile, Product, Wishlist, Cart, CartItem
 
 
 def home(request):
@@ -273,5 +273,164 @@ def check_wishlist(request, product_id):
         })
     except Product.DoesNotExist:
         return JsonResponse({'success': False, 'message': 'Product not found'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': f'Error: {str(e)}'})
+
+
+@login_required(login_url='hasta_app:login')
+def cart_page(request):
+    """Cart page view - displays all cart items"""
+    cart, created = Cart.objects.get_or_create(user=request.user)
+    cart_items = cart.items.all()
+    total_price = cart.get_total_price()
+    
+    context = {
+        'cart_items': cart_items,
+        'total_price': total_price,
+        'total_items': cart.get_total_items(),
+    }
+    return render(request, 'store/cart.html', context)
+
+
+@require_http_methods(["POST"])
+@login_required(login_url='hasta_app:login')
+def add_to_cart(request):
+    """AJAX endpoint to add product to cart"""
+    try:
+        data = json.loads(request.body)
+        product_id = data.get('product_id')
+        quantity = int(data.get('quantity', 1))
+        
+        if not product_id or quantity <= 0:
+            return JsonResponse({'success': False, 'message': 'Invalid product ID or quantity'})
+        
+        try:
+            product = Product.objects.get(id=product_id, is_active=True)
+        except Product.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'Product not found'})
+        
+        if quantity > product.stock_quantity:
+            return JsonResponse({'success': False, 'message': f'Only {product.stock_quantity} items available'})
+        
+        # Get or create user's cart
+        cart, created = Cart.objects.get_or_create(user=request.user)
+        
+        # Add product to cart
+        cart_item, item_created = cart.items.get_or_create(product=product)
+        if not item_created:
+            if cart_item.quantity + quantity > product.stock_quantity:
+                return JsonResponse({'success': False, 'message': f'Only {product.stock_quantity} items available'})
+            cart_item.quantity += quantity
+        else:
+            cart_item.quantity = quantity
+        cart_item.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'{product.name} added to cart',
+            'total_items': cart.get_total_items(),
+            'total_price': float(cart.get_total_price()),
+        })
+    
+    except json.JSONDecodeError:
+        return JsonResponse({'success': False, 'message': 'Invalid request'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': f'Error: {str(e)}'})
+
+
+@require_http_methods(["POST"])
+@login_required(login_url='hasta_app:login')
+def remove_from_cart(request):
+    """AJAX endpoint to remove product from cart"""
+    try:
+        data = json.loads(request.body)
+        product_id = data.get('product_id')
+        
+        if not product_id:
+            return JsonResponse({'success': False, 'message': 'Product ID is required'})
+        
+        try:
+            product = Product.objects.get(id=product_id)
+        except Product.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'Product not found'})
+        
+        cart = Cart.objects.get(user=request.user)
+        cart.remove_product(product)
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'{product.name} removed from cart',
+            'total_items': cart.get_total_items(),
+            'total_price': float(cart.get_total_price()),
+        })
+    
+    except Cart.DoesNotExist:
+        return JsonResponse({'success': False, 'message': 'Cart not found'})
+    except json.JSONDecodeError:
+        return JsonResponse({'success': False, 'message': 'Invalid request'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': f'Error: {str(e)}'})
+
+
+@require_http_methods(["POST"])
+@login_required(login_url='hasta_app:login')
+def update_cart_item(request):
+    """AJAX endpoint to update quantity of an item in cart"""
+    try:
+        data = json.loads(request.body)
+        product_id = data.get('product_id')
+        quantity = int(data.get('quantity', 0))
+        
+        if not product_id:
+            return JsonResponse({'success': False, 'message': 'Product ID is required'})
+        
+        try:
+            product = Product.objects.get(id=product_id)
+        except Product.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'Product not found'})
+        
+        cart = Cart.objects.get(user=request.user)
+        
+        if quantity <= 0:
+            cart.remove_product(product)
+            return JsonResponse({
+                'success': True,
+                'message': f'{product.name} removed from cart',
+                'total_items': cart.get_total_items(),
+                'total_price': float(cart.get_total_price()),
+            })
+        
+        if quantity > product.stock_quantity:
+            return JsonResponse({'success': False, 'message': f'Only {product.stock_quantity} items available'})
+        
+        cart.update_quantity(product, quantity)
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Cart updated',
+            'total_items': cart.get_total_items(),
+            'total_price': float(cart.get_total_price()),
+        })
+    
+    except Cart.DoesNotExist:
+        return JsonResponse({'success': False, 'message': 'Cart not found'})
+    except json.JSONDecodeError:
+        return JsonResponse({'success': False, 'message': 'Invalid request'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': f'Error: {str(e)}'})
+
+
+@require_http_methods(["GET"])
+@login_required(login_url='hasta_app:login')
+def get_cart_info(request):
+    """AJAX endpoint to get cart information"""
+    try:
+        cart, created = Cart.objects.get_or_create(user=request.user)
+        
+        return JsonResponse({
+            'success': True,
+            'total_items': cart.get_total_items(),
+            'total_price': float(cart.get_total_price()),
+        })
     except Exception as e:
         return JsonResponse({'success': False, 'message': f'Error: {str(e)}'})
