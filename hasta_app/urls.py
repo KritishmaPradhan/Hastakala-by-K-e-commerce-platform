@@ -18,5 +18,8 @@ urlpatterns = [
     path('api/cart/remove/', views.remove_from_cart, name='remove_from_cart'),
     path('api/cart/update/', views.update_cart_item, name='update_cart_item'),
     path('api/cart/info/', views.get_cart_info, name='get_cart_info'),
+    path('checkout/', views.checkout, name='checkout'),
+    path('order/summary/<int:order_id>/', views.order_summary, name='order_summary'),
+    path('orders/', views.my_orders, name='my_orders'),
 ]
 

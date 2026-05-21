@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import UserProfile, Product, Wishlist, Cart, CartItem
+from .models import UserProfile, Product, Wishlist, Cart, CartItem, Order, OrderItem
 
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):
@@ -96,3 +96,39 @@ class CartItemAdmin(admin.ModelAdmin):
     def get_item_total(self, obj):
         return f"₹{obj.get_item_total()}"
     get_item_total.short_description = 'Item Total'
+
+
+class OrderItemInline(admin.TabularInline):
+    model = OrderItem
+    extra = 0
+    readonly_fields = ('price_at_purchase', 'get_item_total')
+    fields = ('product', 'quantity', 'price_at_purchase', 'get_item_total')
+    
+    def get_item_total(self, obj):
+        if obj.id:
+            return f"₹{obj.get_item_total()}"
+        return ""
+    get_item_total.short_description = 'Item Total'
+
+
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'total_price', 'status', 'created_at', 'phone_number')
+    list_filter = ('status', 'created_at')
+    search_fields = ('user__username', 'user__email', 'phone_number', 'shipping_address')
+    readonly_fields = ('created_at', 'total_price')
+    inlines = [OrderItemInline]
+    
+    fieldsets = (
+        ('Order Information', {
+            'fields': ('user', 'total_price', 'status')
+        }),
+        ('Delivery Details', {
+            'fields': ('shipping_address', 'phone_number')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at',),
+            'classes': ('collapse',)
+        }),
+    )
+

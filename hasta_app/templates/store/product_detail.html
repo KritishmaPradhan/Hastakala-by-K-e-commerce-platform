@@ -66,6 +66,18 @@
                 <span class="category-badge">{{ product.get_category_display }}</span>
             </div>
 
+            <!-- Quantity Selector -->
+            {% if product.stock_quantity > 0 %}
+            <div class="product-quantity-selector" style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem;">
+                <label style="font-weight: 600; color: var(--dark-color); font-size: 0.95rem;">Quantity:</label>
+                <div class="quantity-control" style="display: flex; align-items: center; border: 2px solid #fff0f2; border-radius: 50px; overflow: hidden; width: fit-content; background: #fff;">
+                    <button class="qty-btn" type="button" onclick="decrementProductQty()" style="background-color: #fff0f2; border: none; width: 40px; height: 40px; cursor: pointer; font-size: 1.2rem; transition: background-color 0.3s; font-weight: bold; color: var(--accent-color);">−</button>
+                    <input type="number" id="product-detail-qty" value="1" min="1" max="{{ product.stock_quantity }}" style="width: 60px; height: 40px; border: none; text-align: center; font-weight: 600; font-size: 1.1rem; color: var(--dark-color); background: transparent;" onchange="validateProductQty(this.value)">
+                    <button class="qty-btn" type="button" onclick="incrementProductQty()" style="background-color: #fff0f2; border: none; width: 40px; height: 40px; cursor: pointer; font-size: 1.2rem; transition: background-color 0.3s; font-weight: bold; color: var(--accent-color);">+</button>
+                </div>
+            </div>
+            {% endif %}
+
             <!-- Add to Cart and Buy Now Buttons -->
             <div class="product-actions">
                 {% if product.stock_quantity > 0 %}
@@ -132,16 +144,46 @@
         if (!isUserAuthenticated) {
             window.location.href = loginUrl + "?next=" + encodeURIComponent(currentProductUrl);
         } else {
-            addToCart(currentProductId);
+            const qty = parseInt(document.getElementById('product-detail-qty').value) || 1;
+            addToCart(currentProductId, qty);
         }
     }
 
     function handleBuyNow() {
+        const qty = parseInt(document.getElementById('product-detail-qty').value) || 1;
+        const checkoutUrlWithParams = "{% url 'hasta_app:checkout' %}?product_id=" + currentProductId + "&quantity=" + qty;
+        
         if (!isUserAuthenticated) {
-            window.location.href = loginUrl + "?next=" + encodeURIComponent(currentProductUrl);
+            window.location.href = loginUrl + "?next=" + encodeURIComponent(checkoutUrlWithParams);
         } else {
-            alert('Buy now functionality coming soon!');
+            window.location.href = checkoutUrlWithParams;
         }
+    }
+
+    function incrementProductQty() {
+        const input = document.getElementById('product-detail-qty');
+        const max = parseInt(input.getAttribute('max')) || 999;
+        let val = parseInt(input.value) || 1;
+        if (val < max) {
+            input.value = val + 1;
+        }
+    }
+
+    function decrementProductQty() {
+        const input = document.getElementById('product-detail-qty');
+        let val = parseInt(input.value) || 1;
+        if (val > 1) {
+            input.value = val - 1;
+        }
+    }
+
+    function validateProductQty(val) {
+        const input = document.getElementById('product-detail-qty');
+        const max = parseInt(input.getAttribute('max')) || 999;
+        let parsed = parseInt(val) || 1;
+        if (parsed < 1) parsed = 1;
+        if (parsed > max) parsed = max;
+        input.value = parsed;
     }
 
     async function handleAddToWishlist() {
@@ -225,7 +267,7 @@
         }, 3000);
     }
 
-    async function addToCart(productId) {
+    async function addToCart(productId, quantity) {
         try {
             const response = await fetch('{% url "hasta_app:add_to_cart" %}', {
                 method: 'POST',
@@ -233,7 +275,7 @@
                     'Content-Type': 'application/json',
                     'X-CSRFToken': getCookie('csrftoken'),
                 },
-                body: JSON.stringify({ product_id: productId, quantity: 1 })
+                body: JSON.stringify({ product_id: productId, quantity: quantity })
             });
 
             const data = await response.json();

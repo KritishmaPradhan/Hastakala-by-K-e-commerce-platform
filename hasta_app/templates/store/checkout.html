@@ -1,0 +1,337 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Checkout - Hastakala by K{% endblock %}
+
+{% block extra_css %}
+<style>
+    .checkout-page {
+        margin-top: 100px;
+        min-height: calc(100vh - 100px);
+        background-color: #fff9fa;
+        padding: 3rem 5%;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+    }
+
+    .checkout-container {
+        max-width: 1200px;
+        width: 100%;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 3rem;
+    }
+
+    .checkout-header {
+        grid-column: 1 / -1;
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .checkout-header p {
+        color: var(--text-light);
+        font-size: 1.1rem;
+    }
+
+    .checkout-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(108, 91, 123, 0.08);
+        padding: 2.5rem;
+        border: 1px solid rgba(248, 177, 149, 0.15);
+        transition: transform 0.3s ease;
+    }
+
+    .checkout-card h2 {
+        font-size: 1.5rem;
+        color: var(--dark-color);
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        border-bottom: 2px solid #fff0f2;
+        padding-bottom: 1rem;
+    }
+
+    .checkout-card h2 i {
+        color: var(--secondary-color);
+    }
+
+    .form-group {
+        margin-bottom: 1.8rem;
+        position: relative;
+    }
+
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        color: var(--dark-color);
+        margin-bottom: 0.6rem;
+        font-size: 0.95rem;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        width: 100%;
+        padding: 1rem 1.2rem;
+        border: 2px solid #eee;
+        border-radius: 12px;
+        font-family: inherit;
+        font-size: 1rem;
+        color: var(--text-color);
+        transition: all 0.3s ease;
+        background-color: #fafafa;
+    }
+
+    .form-group textarea {
+        resize: vertical;
+        min-height: 120px;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+        border-color: var(--secondary-color);
+        background-color: white;
+        box-shadow: 0 5px 15px rgba(246, 114, 128, 0.08);
+        outline: none;
+    }
+
+    /* Floating order items */
+    .checkout-items {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        max-height: 350px;
+        overflow-y: auto;
+        padding-right: 0.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .checkout-items::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .checkout-items::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+
+    .checkout-items::-webkit-scrollbar-thumb {
+        background: var(--primary-color);
+        border-radius: 10px;
+    }
+
+    .checkout-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding-bottom: 1.2rem;
+        border-bottom: 1px solid #fff0f2;
+    }
+
+    .checkout-item:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .checkout-item-img {
+        width: 70px;
+        height: 70px;
+        border-radius: 10px;
+        object-fit: cover;
+        flex-shrink: 0;
+        border: 1px solid #fff0f2;
+    }
+
+    .checkout-item-details {
+        flex: 1;
+    }
+
+    .checkout-item-name {
+        font-weight: 600;
+        color: var(--dark-color);
+        font-size: 1rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .checkout-item-qty {
+        font-size: 0.85rem;
+        color: var(--text-light);
+    }
+
+    .checkout-item-total {
+        font-weight: 700;
+        color: var(--accent-color);
+        font-size: 1.05rem;
+    }
+
+    .price-summary {
+        background-color: #fff8f9;
+        border-radius: 15px;
+        padding: 1.5rem;
+        border: 1px dashed var(--primary-color);
+        margin-bottom: 2rem;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.8rem;
+        color: var(--text-light);
+        font-size: 0.95rem;
+    }
+
+    .summary-row.total {
+        border-top: 2px solid rgba(246, 114, 128, 0.25);
+        padding-top: 1rem;
+        margin-bottom: 0;
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--dark-color);
+    }
+
+    .summary-row.total span:last-child {
+        color: var(--accent-color);
+    }
+
+    .place-order-btn {
+        width: 100%;
+        padding: 1.1rem;
+        background: linear-gradient(45deg, var(--primary-color), var(--secondary-color), var(--accent-color));
+        background-size: 200% auto;
+        color: white;
+        border: none;
+        border-radius: 50px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.4s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        box-shadow: 0 5px 20px rgba(246, 114, 128, 0.3);
+    }
+
+    .place-order-btn:hover {
+        background-position: right center;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(246, 114, 128, 0.45);
+    }
+
+    .secure-badge {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        font-size: 0.85rem;
+        color: #27ae60;
+        margin-top: 1.5rem;
+        font-weight: 600;
+    }
+
+    @media (max-width: 992px) {
+        .checkout-container {
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="checkout-page">
+    <div class="checkout-container">
+        <!-- Header -->
+        <div class="checkout-header">
+            <p>{% if is_buy_now %}Direct Product Checkout{% else %}Checking out your shopping cart items{% endif %}</p>
+        </div>
+
+        <!-- Left Column: Shipping details -->
+        <div class="checkout-card">
+            <h2><i class="fas fa-truck"></i> Delivery Information</h2>
+
+            <form id="checkout-form" method="POST" action="{% url 'hasta_app:checkout' %}">
+                {% csrf_token %}
+
+                <!-- Direct checkout inputs -->
+                {% if is_buy_now %}
+                <input type="hidden" name="product_id" value="{{ product_id }}">
+                <input type="hidden" name="quantity" value="{{ quantity }}">
+                {% endif %}
+
+                <div class="form-group">
+                    <label for="shipping_address">Full Shipping Address</label>
+                    <textarea id="shipping_address" name="shipping_address" required
+                        placeholder="House No, Street, Landmark, City, State, Postal Code">{{ shipping_address }}</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone_number">Contact Number (For Delivery Updates)</label>
+                    <input type="text" id="phone_number" name="phone_number" required placeholder="e.g. +91 98765 43210"
+                        value="{{ phone_number }}">
+                </div>
+
+                <div style="margin-top: 2rem; border-top: 1px solid #fff0f2; padding-top: 1.5rem;">
+                    <p style="color: var(--text-light); font-size: 0.9rem; line-height: 1.5;">
+                        <i class="fas fa-info-circle" style="color: var(--secondary-color); margin-right: 0.5rem;"></i>
+                        <strong>COD (Cash on Delivery):</strong> Currently, we only support cash on delivery. No payment
+                        gateway integration is required, making checkout fast and easy. Pay with cash upon delivery.
+                    </p>
+                </div>
+            </form>
+        </div>
+
+        <!-- Right Column: Order summary and buy trigger -->
+        <div class="checkout-card" style="height: fit-content; position: sticky; top: 120px;">
+            <h2><i class="fas fa-shopping-bag"></i> Order Summary</h2>
+
+            <!-- Items Purchased -->
+            <div class="checkout-items">
+                {% for item in items %}
+                <div class="checkout-item">
+                    <img src="{% static item.product.image_path %}" alt="{{ item.product.name }}"
+                        class="checkout-item-img">
+                    <div class="checkout-item-details">
+                        <div class="checkout-item-name">{{ item.product.name }}</div>
+                        <div class="checkout-item-qty">Qty: {{ item.quantity }} × ₹{{ item.product.price }}</div>
+                    </div>
+                    <div class="checkout-item-total">₹{{ item.total }}</div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Total Price Summary -->
+            <div class="price-summary">
+                <div class="summary-row">
+                    <span>Items Total ({{ total_items }}):</span>
+                    <span>₹{{ total_price }}</span>
+                </div>
+                <div class="summary-row">
+                    <span>Delivery Charge:</span>
+                    <span style="color: #27ae60; font-weight: 600;">FREE</span>
+                </div>
+                <div class="summary-row">
+                    <span>GST / Taxes:</span>
+                    <span>₹0.00</span>
+                </div>
+                <div class="summary-row total">
+                    <span>Grand Total:</span>
+                    <span>₹{{ total_price }}</span>
+                </div>
+            </div>
+
+            <!-- Place Order Button -->
+            <button type="submit" form="checkout-form" class="place-order-btn">
+                <i class="fas fa-check-circle"></i> Place Order (Cash on Delivery)
+            </button>
+
+            <div class="secure-badge">
+                <i class="fas fa-shield-alt"></i> 100% Secure Checkout Handcrafted with Love
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

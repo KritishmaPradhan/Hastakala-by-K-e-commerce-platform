@@ -5,10 +5,10 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
 import json
 
-from .models import UserProfile, Product, Wishlist, Cart, CartItem
+from .models import UserProfile, Product, Wishlist, Cart, CartItem, Order, OrderItem
 
 
 def home(request):
@@ -434,3 +434,198 @@ def get_cart_info(request):
         })
     except Exception as e:
         return JsonResponse({'success': False, 'message': f'Error: {str(e)}'})
+
+
+@login_required(login_url='hasta_app:login')
+def checkout(request):
+    """Checkout page view - handles both Cart checkout and direct Buy Now checkout"""
+    product_id = request.GET.get('product_id') or request.POST.get('product_id')
+    quantity = request.GET.get('quantity') or request.POST.get('quantity')
+    
+    is_buy_now = False
+    buy_now_product = None
+    buy_now_qty = 1
+    
+    # 1. Identify flow type and retrieve items to purchase
+    if product_id:
+        is_buy_now = True
+        try:
+            buy_now_product = Product.objects.get(id=product_id, is_active=True)
+            try:
+                buy_now_qty = int(quantity)
+                if buy_now_qty <= 0:
+                    buy_now_qty = 1
+            except (ValueError, TypeError):
+                buy_now_qty = 1
+                
+            if buy_now_qty > buy_now_product.stock_quantity:
+                messages.warning(request, f"Requested quantity ({buy_now_qty}) exceeds available stock ({buy_now_product.stock_quantity}). Adjusted to maximum available.")
+                buy_now_qty = buy_now_product.stock_quantity
+                if buy_now_qty == 0:
+                    messages.error(request, "This item is currently out of stock.")
+                    return redirect('hasta_app:product_detail', product_id=product_id)
+        except Product.DoesNotExist:
+            messages.error(request, "Product not found.")
+            return redirect('hasta_app:home')
+    
+    # Pre-populate user details from UserProfile if available
+    try:
+        user_profile = request.user.profile
+        default_address = user_profile.address or ""
+        default_phone = user_profile.phone_number or ""
+    except UserProfile.DoesNotExist:
+        default_address = ""
+        default_phone = ""
+        
+    if request.method == 'POST':
+        shipping_address = request.POST.get('shipping_address', '').strip()
+        phone_number = request.POST.get('phone_number', '').strip()
+        
+        if not shipping_address or not phone_number:
+            messages.error(request, "Please fill in all delivery details.")
+            return render_checkout_page(request, is_buy_now, buy_now_product, buy_now_qty, shipping_address or default_address, phone_number or default_phone)
+            
+        try:
+            with transaction.atomic():
+                # Process Buy Now flow
+                if is_buy_now:
+                    product = Product.objects.select_for_update().get(id=product_id)
+                    if product.stock_quantity < buy_now_qty:
+                        messages.error(request, f"Sorry, {product.name} is now out of stock or does not have the requested quantity.")
+                        return redirect('hasta_app:product_detail', product_id=product.id)
+                    
+                    total_price = product.price * buy_now_qty
+                    order = Order.objects.create(
+                        user=request.user,
+                        shipping_address=shipping_address,
+                        phone_number=phone_number,
+                        total_price=total_price,
+                        status='pending'
+                    )
+                    
+                    OrderItem.objects.create(
+                        order=order,
+                        product=product,
+                        quantity=buy_now_qty,
+                        price_at_purchase=product.price
+                    )
+                    
+                    product.stock_quantity -= buy_now_qty
+                    product.save()
+                    
+                # Process Cart checkout flow
+                else:
+                    cart, created = Cart.objects.get_or_create(user=request.user)
+                    cart_items = cart.items.all()
+                    
+                    if not cart_items:
+                        messages.error(request, "Your cart is empty.")
+                        return redirect('hasta_app:cart')
+                        
+                    items_to_save = []
+                    for item in cart_items:
+                        prod = Product.objects.select_for_update().get(id=item.product.id)
+                        if prod.stock_quantity < item.quantity:
+                            messages.error(request, f"Sorry, {prod.name} has only {prod.stock_quantity} units left in stock. Please adjust your cart.")
+                            return redirect('hasta_app:cart')
+                        items_to_save.append((item, prod))
+                        
+                    total_price = cart.get_total_price()
+                    order = Order.objects.create(
+                        user=request.user,
+                        shipping_address=shipping_address,
+                        phone_number=phone_number,
+                        total_price=total_price,
+                        status='pending'
+                    )
+                    
+                    for item, prod in items_to_save:
+                        OrderItem.objects.create(
+                            order=order,
+                            product=prod,
+                            quantity=item.quantity,
+                            price_at_purchase=prod.price
+                        )
+                        prod.stock_quantity -= item.quantity
+                        prod.save()
+                        
+                    cart.items.all().delete()
+                
+                # Update user profile with phone/address if blank
+                profile, p_created = UserProfile.objects.get_or_create(user=request.user)
+                if not profile.address:
+                    profile.address = shipping_address
+                if not profile.phone_number:
+                    profile.phone_number = phone_number
+                profile.save()
+                
+                messages.success(request, "Your order has been placed successfully!")
+                return redirect('hasta_app:order_summary', order_id=order.id)
+                
+        except Exception as e:
+            messages.error(request, f"An error occurred while placing your order: {str(e)}")
+            return render_checkout_page(request, is_buy_now, buy_now_product, buy_now_qty, shipping_address, phone_number)
+            
+    # GET Request
+    return render_checkout_page(request, is_buy_now, buy_now_product, buy_now_qty, default_address, default_phone)
+
+
+def render_checkout_page(request, is_buy_now, product, qty, address, phone):
+    """Helper to render checkout template with appropriate context"""
+    if is_buy_now:
+        items = [{
+            'product': product,
+            'quantity': qty,
+            'total': product.price * qty
+        }]
+        total_price = product.price * qty
+        total_items = qty
+    else:
+        cart, created = Cart.objects.get_or_create(user=request.user)
+        items = [{
+            'product': item.product,
+            'quantity': item.quantity,
+            'total': item.get_item_total()
+        } for item in cart.items.all()]
+        total_price = cart.get_total_price()
+        total_items = cart.get_total_items()
+        
+    context = {
+        'items': items,
+        'total_price': total_price,
+        'total_items': total_items,
+        'is_buy_now': is_buy_now,
+        'product_id': product.id if product else None,
+        'quantity': qty,
+        'shipping_address': address,
+        'phone_number': phone,
+    }
+    return render(request, 'store/checkout.html', context)
+
+
+@login_required(login_url='hasta_app:login')
+def order_summary(request, order_id):
+    """Order summary page view - displays order details after checkout"""
+    try:
+        order = Order.objects.get(id=order_id, user=request.user)
+    except Order.DoesNotExist:
+        messages.error(request, "Order not found.")
+        return redirect('hasta_app:home')
+        
+    context = {
+        'order': order,
+        'order_items': order.items.all(),
+    }
+    return render(request, 'store/order_summary.html', context)
+
+
+@login_required(login_url='hasta_app:login')
+def my_orders(request):
+    """User orders page - lists all orders placed by the current user"""
+    orders = Order.objects.filter(user=request.user).order_by('-created_at')
+    
+    context = {
+        'orders': orders,
+    }
+    return render(request, 'store/my_orders.html', context)
+
