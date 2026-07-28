@@ -292,7 +292,7 @@
             <div class="checkout-items">
                 {% for item in items %}
                 <div class="checkout-item">
-                    <img src="{% static item.product.image_path %}" alt="{{ item.product.name }}"
+                    <img src="{{ item.product.get_image_url }}" alt="{{ item.product.name }}"
                         class="checkout-item-img">
                     <div class="checkout-item-details">
                         <div class="checkout-item-name">{{ item.product.name }}</div>

@@ -28,7 +28,18 @@ class Product(models.Model):
     # Basic Information
     name = models.CharField(max_length=200, help_text="Product name")
     description = models.TextField(help_text="Detailed product description")
-    image_path = models.CharField(max_length=300, help_text="Path to product image (e.g., 'images/gallery12.jpeg')")
+    image_path = models.CharField(
+        max_length=300,
+        blank=True,
+        null=True,
+        help_text="Fallback path to product image (e.g., 'images/gallery12.jpeg')"
+    )
+    image = models.ImageField(
+        upload_to='images/',
+        blank=True,
+        null=True,
+        help_text="Upload an image file for this product"
+    )
     
     # Pricing and Inventory
     price = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)], default=0.00)
@@ -78,6 +89,14 @@ class Product(models.Model):
     
     def __str__(self):
         return self.name
+
+    def get_image_url(self):
+        if self.image and hasattr(self.image, 'url'):
+            return self.image.url
+        if self.image_path:
+            from django.conf import settings
+            return f"{settings.STATIC_URL}{self.image_path}"
+        return ''
 
 
 class Wishlist(models.Model):

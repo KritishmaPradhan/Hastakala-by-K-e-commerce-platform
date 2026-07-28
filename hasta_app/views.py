@@ -1,4 +1,6 @@
-from django.shortcuts import render, redirect
+from functools import wraps
+
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
@@ -8,6 +10,7 @@ from django.contrib import messages
 from django.db import IntegrityError, transaction
 import json
 
+from .forms import ProductAdminForm, OrderStatusForm
 from .models import UserProfile, Product, Wishlist, Cart, CartItem, Order, OrderItem
 
 
@@ -57,7 +60,7 @@ def api_carousel_items(request):
     
     items = [
         {
-            'image': f'/static/{product.image_path}',
+            'image': product.get_image_url(),
             'title': product.name,
             'description': product.description,
         }
@@ -201,6 +204,17 @@ def logout(request):
     auth_logout(request)
     messages.success(request, 'You have been logged out successfully.')
     return redirect('hasta_app:home')
+
+
+def admin_required(view_func):
+    @wraps(view_func)
+    @login_required(login_url='hasta_app:login')
+    def wrapped(request, *args, **kwargs):
+        if not (request.user.is_staff or request.user.has_perm('hasta_app.change_product') or request.user.has_perm('hasta_app.change_order')):
+            messages.error(request, 'Admin access is required to view that page.')
+            return redirect('hasta_app:home')
+        return view_func(request, *args, **kwargs)
+    return wrapped
 
 
 @login_required(login_url='hasta_app:login')
@@ -628,4 +642,94 @@ def my_orders(request):
         'orders': orders,
     }
     return render(request, 'store/my_orders.html', context)
+
+
+@admin_required
+def admin_dashboard(request):
+    product_count = Product.objects.count()
+    order_count = Order.objects.count()
+    pending_orders = Order.objects.filter(status='pending').count()
+
+    context = {
+        'product_count': product_count,
+        'order_count': order_count,
+        'pending_orders': pending_orders,
+    }
+    return render(request, 'store/admin_dashboard.html', context)
+
+
+@admin_required
+def admin_products(request):
+    products = Product.objects.order_by('-created_at')
+    return render(request, 'store/admin_products.html', {'products': products})
+
+
+@admin_required
+def admin_new_product(request):
+    if request.method == 'POST':
+        form = ProductAdminForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Product created successfully.')
+            return redirect('hasta_app:admin_products')
+    else:
+        form = ProductAdminForm()
+
+    return render(request, 'store/admin_product_form.html', {
+        'form': form,
+        'form_title': 'Add New Product',
+        'product': None,
+    })
+
+
+@admin_required
+def admin_edit_product(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    if request.method == 'POST':
+        form = ProductAdminForm(request.POST, request.FILES, instance=product)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Product updated successfully.')
+            return redirect('hasta_app:admin_products')
+    else:
+        form = ProductAdminForm(instance=product)
+
+    return render(request, 'store/admin_product_form.html', {
+        'form': form,
+        'form_title': f'Edit Product: {product.name}',
+        'product': product,
+    })
+
+
+@admin_required
+def admin_delete_product(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    product.delete()
+    messages.success(request, 'Product deleted successfully.')
+    return redirect('hasta_app:admin_products')
+
+
+@admin_required
+def admin_orders(request):
+    orders = Order.objects.order_by('-created_at')
+    return render(request, 'store/admin_orders.html', {'orders': orders})
+
+
+@admin_required
+def admin_order_detail(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    if request.method == 'POST':
+        form = OrderStatusForm(request.POST, instance=order)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Order status updated successfully.')
+            return redirect('hasta_app:admin_orders')
+    else:
+        form = OrderStatusForm(instance=order)
+
+    return render(request, 'store/admin_order_detail.html', {
+        'order': order,
+        'order_items': order.items.select_related('product').all(),
+        'status_form': form,
+    })
 

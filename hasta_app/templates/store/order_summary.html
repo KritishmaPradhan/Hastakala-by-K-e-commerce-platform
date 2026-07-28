@@ -329,7 +329,7 @@
                 <div class="summary-item-row">
                     <div class="summary-item-info">
                         {% if item.product %}
-                            <img src="{% static item.product.image_path %}" alt="{{ item.product.name }}">
+                            <img src="{{ item.product.get_image_url }}" alt="{{ item.product.name }}">
                         {% else %}
                             <div style="width: 60px; height: 60px; background: #eee; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
                                 <i class="fas fa-image" style="color: #ccc;"></i>

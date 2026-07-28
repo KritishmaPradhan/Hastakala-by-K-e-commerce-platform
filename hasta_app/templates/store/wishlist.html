@@ -41,7 +41,7 @@
                 <!-- Item Header (Always Visible) -->
                 <div class="wishlist-item-header">
                     <div class="wishlist-item-image">
-                        <img src="{% static product.image_path %}" alt="{{ product.name }}">
+                        <img src="{{ product.get_image_url }}" alt="{{ product.name }}">
                     </div>
                     <div class="wishlist-item-info">
                         <h3>{{ product.name }}</h3>

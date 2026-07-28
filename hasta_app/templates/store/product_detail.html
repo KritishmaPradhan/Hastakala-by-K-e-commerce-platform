@@ -18,7 +18,7 @@
         <!-- Product Image Section -->
         <div class="product-image-section">
             <div class="product-image-wrapper">
-                <img src="{% static product.image_path %}" alt="{{ product.name }}" class="product-main-image">
+                <img src="{{ product.get_image_url }}" alt="{{ product.name }}" class="product-main-image">
             </div>
         </div>
 
@@ -111,7 +111,7 @@
             {% for rel_product in related_products %}
             <div class="product-card-mini">
                 <div class="product-image-mini">
-                    <img src="{% static rel_product.image_path %}" alt="{{ rel_product.name }}">
+                    <img src="{{ rel_product.get_image_url }}" alt="{{ rel_product.name }}">
                 </div>
                 <div class="product-info-mini">
                     <h4>{{ rel_product.name }}</h4>

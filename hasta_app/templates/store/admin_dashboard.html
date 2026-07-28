@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Admin Dashboard - Hastakala by K{% endblock %}
+
+{% block extra_css %}
+<style>
+    .admin-dashboard {
+        margin-top: 100px;
+        padding: 3rem 5%;
+        min-height: calc(100vh - 100px);
+    }
+    .admin-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.8rem;
+    }
+    .admin-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 18px 50px rgba(141, 170, 183, 0.08);
+        border: 1px solid rgba(245, 214, 190, 0.28);
+        padding: 2rem;
+        text-align: left;
+    }
+    .admin-card h2 {
+        font-size: 1.35rem;
+        margin-bottom: 1rem;
+        color: var(--dark-color);
+    }
+    .admin-card p {
+        color: var(--text-light);
+        margin-bottom: 1.5rem;
+        line-height: 1.75;
+    }
+    .admin-card a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        padding: 0.85rem 1.4rem;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        border-radius: 50px;
+        color: white;
+        text-decoration: none;
+        font-weight: 700;
+        transition: transform 0.2s ease;
+    }
+    .admin-card a:hover {
+        transform: translateY(-2px);
+    }
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 2.5rem;
+    }
+    .dashboard-header h1 {
+        font-size: 2.3rem;
+        letter-spacing: 0.02em;
+        margin: 0;
+    }
+    .dashboard-metrics {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.2rem;
+        margin-top: 1rem;
+    }
+    .metric-card {
+        background: #fdf2f0;
+        border-radius: 18px;
+        padding: 1.45rem 1.5rem;
+        box-shadow: 0 12px 30px rgba(245, 214, 190, 0.25);
+        border: 1px solid rgba(255, 206, 186, 0.6);
+    }
+    .metric-card h3 {
+        font-size: 1rem;
+        color: var(--text-light);
+        margin-bottom: 0.5rem;
+    }
+    .metric-card p {
+        font-size: 1.7rem;
+        font-weight: 700;
+        color: var(--dark-color);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="admin-dashboard">
+    <div class="dashboard-header">
+        <div>
+            <h1>Admin Dashboard</h1>
+            <p>Manage products, review and update order statuses, and keep the store running smoothly.</p>
+        </div>
+    </div>
+
+    <div class="dashboard-metrics">
+        <div class="metric-card">
+            <h3>Total products</h3>
+            <p>{{ product_count }}</p>
+        </div>
+        <div class="metric-card">
+            <h3>Total orders</h3>
+            <p>{{ order_count }}</p>
+        </div>
+        <div class="metric-card">
+            <h3>Pending orders</h3>
+            <p>{{ pending_orders }}</p>
+        </div>
+    </div>
+
+    <div class="admin-grid">
+        <div class="admin-card">
+            <h2>Products</h2>
+            <p>View existing products, edit details, or add a new product with a form similar to the Django admin experience.</p>
+            <a href="{% url 'hasta_app:admin_products' %}">Manage Products</a>
+        </div>
+        <div class="admin-card">
+            <h2>Orders</h2>
+            <p>See all orders, inspect details, and update order status from pending to completed or cancelled.</p>
+            <a href="{% url 'hasta_app:admin_orders' %}">Review Orders</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

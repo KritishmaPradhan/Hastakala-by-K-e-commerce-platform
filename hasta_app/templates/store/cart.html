@@ -328,7 +328,7 @@
                 {% for item in cart_items %}
                 <div class="cart-item" data-product-id="{{ item.product.id }}">
                     <div class="cart-item-image">
-                        <img src="{% static item.product.image_path %}" alt="{{ item.product.name }}">
+                        <img src="{{ item.product.get_image_url }}" alt="{{ item.product.name }}">
                     </div>
 
                     <div class="cart-item-info">

@@ -29,7 +29,7 @@
         [
             {% for product in featured_products %}
             {
-                "image": "{% static product.image_path %}",
+                "image": "{{ product.get_image_url }}",
                 "title": "{{ product.name|escapejs }}",
                 "description": "{{ product.description|escapejs }}"
             }{% if not forloop.last %},{% endif %}
@@ -79,7 +79,7 @@
                             </div>
                             
                             <a href="{% url 'hasta_app:product_detail' product.id %}">
-                                <img src="{% static product.image_path %}" alt="{{ product.name }}" loading="lazy">
+                                <img src="{{ product.get_image_url }}" alt="{{ product.name }}" loading="lazy">
                             </a>
                         </div>
                         <div class="product-card-body">

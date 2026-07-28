@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Admin Orders - Hastakala by K{% endblock %}
+
+{% block extra_css %}
+<style>
+    .admin-orders-page {
+        margin-top: 100px;
+        min-height: calc(100vh - 100px);
+        padding: 3rem 5%;
+        background-color: #fff9fa;
+    }
+    .admin-orders-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-bottom: 2rem;
+    }
+    .admin-orders-header h1 {
+        font-size: 2.2rem;
+        color: var(--dark-color);
+    }
+    .orders-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 15px 40px rgba(108, 91, 123, 0.07);
+    }
+    .orders-table th,
+    .orders-table td {
+        padding: 1rem 1.2rem;
+        text-align: left;
+        border-bottom: 1px solid #f3e0dc;
+        font-size: 0.95rem;
+    }
+    .orders-table th {
+        background: #fde8e2;
+        color: #7d635f;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+    .orders-table tbody tr:hover {
+        background: #fdf2f0;
+    }
+    .status-badge {
+        display: inline-flex;
+        padding: 0.4rem 0.85rem;
+        border-radius: 999px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-transform: capitalize;
+    }
+    .status-pending { background: #ffe7ce; color: #d35400; }
+    .status-processing { background: #d7ebff; color: #07689f; }
+    .status-completed { background: #d5f7e3; color: #2e7d32; }
+    .status-cancelled { background: #ffd6dc; color: #b71c1c; }
+    .btn-secondary,
+    .btn-primary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.75rem 1rem;
+        gap: 0.4rem;
+        border-radius: 999px;
+        font-weight: 700;
+        text-decoration: none;
+        border: 1px solid transparent;
+    }
+    .btn-secondary { background: #f7f0ee; color: var(--dark-color); border-color: #f1d7c6; }
+    .btn-primary { background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; }
+    .no-orders-card {
+        background: white;
+        border-radius: 20px;
+        padding: 3rem;
+        text-align: center;
+        box-shadow: 0 15px 40px rgba(108, 91, 123, 0.07);
+        border: 1px solid rgba(245, 214, 190, 0.4);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="admin-orders-page">
+    <div class="admin-orders-header">
+        <div>
+            <h1>Order Management</h1>
+            <p>Review orders and update statuses directly from the admin panel.</p>
+        </div>
+    </div>
+
+    {% if orders %}
+    <table class="orders-table">
+        <thead>
+            <tr>
+                <th>Order</th>
+                <th>User</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Created</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td>#{{ order.id }}</td>
+                <td>{{ order.user.username }}</td>
+                <td>₹{{ order.total_price }}</td>
+                <td><span class="status-badge status-{{ order.status }}">{{ order.get_status_display }}</span></td>
+                <td>{{ order.created_at|date:'M j, Y H:i' }}</td>
+                <td><a href="{% url 'hasta_app:admin_order_detail' order.id %}" class="btn-secondary">Details</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="no-orders-card">
+        <h2>No orders available</h2>
+        <p>Once customers place orders, they will appear here for review and status updates.</p>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

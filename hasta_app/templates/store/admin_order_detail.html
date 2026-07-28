@@ -1,0 +1,197 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Order #{{ order.id }} - Admin - Hastakala by K{% endblock %}
+
+{% block extra_css %}
+<style>
+    .admin-order-detail-page {
+        margin-top: 100px;
+        min-height: calc(100vh - 100px);
+        padding: 3rem 5%;
+        background-color: #fff9fa;
+    }
+    .order-detail-card {
+        background: white;
+        border-radius: 20px;
+        padding: 2.5rem;
+        box-shadow: 0 18px 45px rgba(108, 91, 123, 0.08);
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+    .order-detail-header {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+        border-bottom: 1px solid #f3e0dc;
+        padding-bottom: 1.2rem;\n        margin-bottom: 2rem;
+    }
+    .order-detail-header h1 {
+        font-size: 2rem;
+        margin: 0;
+        color: var(--dark-color);
+    }
+    .order-meta {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    .meta-box {
+        background: #fdf2f0;
+        border-radius: 18px;
+        padding: 1.35rem 1.5rem;
+        border: 1px solid rgba(255, 206, 186, 0.6);
+    }
+    .meta-box h3 {
+        margin: 0 0 0.5rem;
+        font-size: 0.95rem;
+        color: var(--dark-color);
+    }
+    .meta-box p {
+        margin: 0;
+        color: var(--text-light);
+        line-height: 1.6;
+    }
+    .order-items-list {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 2rem;
+    }
+    .order-items-list th,
+    .order-items-list td {
+        padding: 1rem 1.2rem;
+        text-align: left;
+        border-bottom: 1px solid #f3e0dc;
+    }
+    .order-items-list th {
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.04em;
+        background: #fde8e2;
+        color: #7d635f;
+    }
+    .order-items-list tbody tr:hover {
+        background: #fdf2f0;
+    }
+    .form-group {
+        margin-bottom: 1.25rem;
+    }
+    .form-label {
+        margin-bottom: 0.5rem;
+        display: block;
+        font-weight: 700;
+        color: var(--dark-color);
+    }
+    .form-input {
+        width: 100%;
+        padding: 0.95rem 1rem;
+        border-radius: 14px;
+        border: 1px solid #e7d8d3;
+        background: #fbf4f2;
+        font-size: 0.96rem;
+    }
+    .btn-primary,
+    .btn-secondary {
+        padding: 0.9rem 1.5rem;
+        border-radius: 999px;
+        font-weight: 700;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        border: 1px solid transparent;
+    }
+    .btn-primary { background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; }
+    .btn-secondary { background: #f7f0ee; color: var(--dark-color); border-color: #f1d7c6; }
+    .status-badge {
+        display: inline-flex;
+        padding: 0.4rem 0.85rem;
+        border-radius: 999px;
+        font-size: 0.9rem;
+        text-transform: capitalize;
+        font-weight: 700;
+    }
+    .status-pending { background: #ffe7ce; color: #d35400; }
+    .status-processing { background: #d7ebff; color: #07689f; }
+    .status-completed { background: #d5f7e3; color: #2e7d32; }
+    .status-cancelled { background: #ffd6dc; color: #b71c1c; }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="admin-order-detail-page">
+    <div class="order-detail-card">
+        <div class="order-detail-header">
+            <div>
+                <h1>Order #{{ order.id }}</h1>
+                <p><strong>User:</strong> {{ order.user.username }} ({{ order.user.email }})</p>
+            </div>
+            <div>
+                <span class="status-badge status-{{ order.status }}">{{ order.get_status_display }}</span>
+            </div>
+        </div>
+
+        <div class="order-meta">
+            <div class="meta-box">
+                <h3>Total Price</h3>
+                <p>₹{{ order.total_price }}</p>
+            </div>
+            <div class="meta-box">
+                <h3>Created</h3>
+                <p>{{ order.created_at|date:'M j, Y H:i' }}</p>
+            </div>
+            <div class="meta-box">
+                <h3>Contact</h3>
+                <p>{{ order.phone_number }}</p>
+            </div>
+            <div class="meta-box">
+                <h3>Shipping Address</h3>
+                <p>{{ order.shipping_address }}</p>
+            </div>
+        </div>
+
+        <table class="order-items-list">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in order_items %}
+                <tr>
+                    <td>
+                        {% if item.product %}
+                            <img src="{{ item.product.get_image_url }}" alt="{{ item.product.name }}" style="max-width: 90px; max-height: 90px; border-radius: 12px; object-fit: cover; display: block; margin-bottom: 0.5rem;">
+                            {{ item.product.name }}
+                        {% else %}
+                            Deleted product
+                        {% endif %}
+                    </td>
+                    <td>₹{{ item.price_at_purchase }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>₹{{ item.get_item_total }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label class="form-label" for="id_status">Update status</label>
+                {{ status_form.status }}
+            </div>
+            <div class="form-actions">
+                <a href="{% url 'hasta_app:admin_orders' %}" class="btn-secondary">Back to orders</a>
+                <button type="submit" class="btn-primary">Save status</button>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}

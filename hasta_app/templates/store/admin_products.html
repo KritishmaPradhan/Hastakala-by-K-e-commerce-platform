@@ -1,0 +1,205 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Admin Products - Hastakala by K{% endblock %}
+
+{% block extra_css %}
+<style>
+    .admin-products-page {
+        margin-top: 100px;
+        min-height: calc(100vh - 100px);
+        padding: 3rem 5%;
+        background-color: #fff9fa;
+    }
+    .admin-page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-bottom: 2rem;
+    }
+    .admin-page-header h1 {
+        font-size: 2.2rem;
+        color: var(--dark-color);
+    }
+    .products-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 2rem;
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 15px 40px rgba(108, 91, 123, 0.07);
+    }
+    .products-table thead {
+        background: #fde8e2;
+    }
+    .products-table th,
+    .products-table td {
+        padding: 1rem 1.2rem;
+        text-align: left;
+        border-bottom: 1px solid #f3e0dc;
+        font-size: 0.96rem;
+    }
+    .products-table th {
+        color: #7d635f;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+    .products-table tbody tr:hover {
+        background: #fdf2f0;
+    }
+    .btn-primary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        padding: 0.85rem 1.45rem;
+        border-radius: 50px;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        text-decoration: none;
+        font-weight: 700;
+    }
+    .btn-secondary,
+    .btn-danger {
+        padding: 0.75rem 1rem;
+        border-radius: 999px;
+        font-weight: 700;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        border: 1px solid transparent;
+        transition: background 0.2s ease;
+    }
+    .btn-secondary {
+        background: #f7f0ee;
+        color: var(--dark-color);
+        border-color: #f1d7c6;
+    }
+    .btn-danger {
+        background: #ffe6e1;
+        color: #d63f3f;
+        border-color: #f1c0b8;
+    }
+    .products-table td.actions {
+        white-space: nowrap;
+    }
+    .product-form {
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 15px 40px rgba(108, 91, 123, 0.07);
+        margin-bottom: 2rem;
+    }
+    .product-form h2 {
+        margin-bottom: 1.2rem;
+        font-size: 1.7rem;
+        color: var(--dark-color);
+    }
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1.2rem;
+    }
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+    .form-group label {
+        margin-bottom: 0.55rem;
+        font-weight: 700;
+        color: var(--dark-color);
+    }
+    .form-input,
+    .form-select,
+    .form-textarea {
+        width: 100%;
+        padding: 0.95rem 1rem;
+        border-radius: 14px;
+        border: 1px solid #e7d8d3;
+        outline: none;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        font-size: 0.96rem;
+        background: #fbf4f2;
+    }
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 4px rgba(246, 114, 128, 0.12);
+    }
+    .form-textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+    .form-actions {
+        margin-top: 1.5rem;
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    .form-actions button {
+        padding: 0.9rem 1.6rem;
+        border-radius: 999px;
+        border: none;
+        color: white;
+        font-weight: 700;
+        cursor: pointer;
+    }
+    .save-btn {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    }
+    .cancel-btn {
+        background: #f7f0ee;
+        color: var(--dark-color);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="admin-products-page">
+    <div class="admin-page-header">
+        <div>
+            <h1>Product Management</h1>
+            <p>Use this form to add or edit product details, just like the Django admin interface.</p>
+        </div>
+        <a href="{% url 'hasta_app:admin_new_product' %}" class="btn-primary">Add New Product</a>
+    </div>
+
+    {% if products %}
+    <table class="products-table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+            <tr>
+                <td>{{ product.name }}</td>
+                <td>{{ product.get_category_display }}</td>
+                <td>₹{{ product.price }}</td>
+                <td>{{ product.stock_quantity }}</td>
+                <td>{{ product.is_active|yesno:"Active,Inactive" }}</td>
+                <td class="actions">
+                    <a href="{% url 'hasta_app:admin_edit_product' product.id %}" class="btn-secondary">Edit</a>
+                    <a href="{% url 'hasta_app:admin_delete_product' product.id %}" class="btn-danger">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No products found yet.</p>
+    {% endif %}
+</section>
+{% endblock %}
