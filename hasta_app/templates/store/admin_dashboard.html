@@ -14,26 +14,68 @@
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         gap: 1.8rem;
+        margin-top: 2rem;
     }
     .admin-card {
-        background: white;
-        border-radius: 20px;
-        box-shadow: 0 18px 50px rgba(141, 170, 183, 0.08);
-        border: 1px solid rgba(245, 214, 190, 0.28);
+        position: relative;
+        background: linear-gradient(135deg, #fffdf9 0%, #fff4ef 100%);
+        border-radius: 22px;
+        box-shadow: 0 18px 45px rgba(141, 170, 183, 0.12);
+        border: 1px solid rgba(246, 114, 128, 0.22);
         padding: 2rem;
         text-align: left;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .admin-card::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(248, 177, 149, 0.12), rgba(246, 114, 128, 0.08));
+        pointer-events: none;
+    }
+    .admin-card:hover {
+        transform: translateY(-6px) rotate(-1deg);
+        box-shadow: 0 20px 50px rgba(141, 170, 183, 0.16);
+    }
+    .admin-card-pin {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        color: var(--secondary-color);
+        font-size: 1rem;
+        opacity: 0.9;
+        transform: rotate(35deg);
+    }
+    .admin-card-icon {
+        width: 3rem;
+        height: 3rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 14px;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        margin-bottom: 1rem;
+        box-shadow: 0 10px 22px rgba(246, 114, 128, 0.24);
     }
     .admin-card h2 {
         font-size: 1.35rem;
-        margin-bottom: 1rem;
+        margin-bottom: 0.8rem;
         color: var(--dark-color);
+        font-weight: 800;
+        letter-spacing: 0.01em;
     }
     .admin-card p {
         color: var(--text-light);
         margin-bottom: 1.5rem;
         line-height: 1.75;
+        position: relative;
+        z-index: 1;
     }
     .admin-card a {
+        position: relative;
+        z-index: 1;
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -58,32 +100,130 @@
         margin-bottom: 2.5rem;
     }
     .dashboard-header h1 {
-        font-size: 2.3rem;
+        font-size: 2.4rem;
         letter-spacing: 0.02em;
         margin: 0;
+        font-weight: 800;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    .dashboard-header p {
+        color: var(--text-light);
+        margin-top: 0.5rem;
     }
     .dashboard-metrics {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         gap: 1.2rem;
         margin-top: 1rem;
+        padding: 1.2rem;
+        border-radius: 24px;
+        background: linear-gradient(135deg, rgba(248, 177, 149, 0.12), rgba(255, 255, 255, 0.9));
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
     }
     .metric-card {
-        background: #fdf2f0;
-        border-radius: 18px;
-        padding: 1.45rem 1.5rem;
-        box-shadow: 0 12px 30px rgba(245, 214, 190, 0.25);
-        border: 1px solid rgba(255, 206, 186, 0.6);
+        position: relative;
+        display: flex;
+        align-items:center;
+        min-height: 150px;
+        padding: 1rem;
+        background: linear-gradient(145deg, #ffffff, #fef7f2);
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.9);
+        overflow: visible;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+ 
+    .metric-card:hover .metric-card-content {
+        transform: translateX(6px);
+        box-shadow: 0 16px 34px rgba(76, 95, 114, 0.12);
+    }
+    .metric-card-accent {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 35%;
+        min-width: 70px;
+        height: 82%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 22px;
+        background: linear-gradient(135deg, rgba(248, 177, 149, 0.95), rgba(246, 114, 128, 0.84));
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 14px 28px rgba(246, 114, 128, 0.24);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        z-index: 1;
+    }
+    .metric-card-content {
+        position: relative;
+        /* z-index: 1; */
+        margin-left: 28%;
+        flex: 1;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        padding: 1.2rem 1rem 1.2rem 4rem;
+        box-shadow: 0 12px 28px rgba(76, 95, 114, 0.08);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
     .metric-card h3 {
-        font-size: 1rem;
+        font-size: 0.95rem;
+        font-weight: 600;
         color: var(--text-light);
-        margin-bottom: 0.5rem;
+        margin: 0 0 0.35rem 0;
     }
     .metric-card p {
-        font-size: 1.7rem;
+        font-size: 1.6rem;
         font-weight: 700;
         color: var(--dark-color);
+        margin: 0;
+    }
+    .metric-card-icon {
+        width: 3rem;
+        height: 3rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.24);
+        color: white;
+        font-size: 1.1rem;
+        box-shadow: 0 10px 20px rgba(255, 255, 255, 0.16);
+    }
+    @media (max-width: 768px) {
+        .metric-card {
+            min-height: 140px;
+        }
+        .metric-card-accent {
+            width: 30%;
+            min-width: 80px;
+        }
+        .metric-card-content {
+            margin-left: 24%;
+            padding: 1rem 0.8rem 1rem 1rem;
+        }
+    }
+    @media (max-width: 576px) {
+        .metric-card {
+            flex-direction: column;
+            align-items: stretch;
+            padding-top: 2rem;
+        }
+        .metric-card-accent {
+            left: 50%;
+            top: 1.15rem;
+            transform: translateX(-50%);
+            width: 78%;
+            height: 68px;
+        }
+        .metric-card-content {
+            margin-left: 0;
+            margin-top: 2.8rem;
+            text-align: center;
+        }
     }
 </style>
 {% endblock %}
@@ -99,26 +239,45 @@
 
     <div class="dashboard-metrics">
         <div class="metric-card">
-            <h3>Total products</h3>
-            <p>{{ product_count }}</p>
+            <div class="metric-card-accent">
+                <div class="metric-card-icon"><i class="fas fa-box-open"></i></div>
+            </div>
+            <div class="metric-card-content">
+                <h3>Total products</h3>
+                <p>{{ product_count }}</p>
+            </div>
         </div>
         <div class="metric-card">
-            <h3>Total orders</h3>
-            <p>{{ order_count }}</p>
+            <div class="metric-card-accent">
+                <div class="metric-card-icon"><i class="fas fa-receipt"></i></div>
+            </div>
+            <div class="metric-card-content">
+                <h3>Total orders</h3>
+                <p>{{ order_count }}</p>
+            </div>
         </div>
         <div class="metric-card">
-            <h3>Pending orders</h3>
-            <p>{{ pending_orders }}</p>
+            <div class="metric-card-accent">
+                <div class="metric-card-icon"><i class="fas fa-clock"></i></div>
+            </div>
+            <div class="metric-card-content">
+                <h3>Pending orders</h3>
+                <p>{{ pending_orders }}</p>
+            </div>
         </div>
     </div>
 
     <div class="admin-grid">
         <div class="admin-card">
+            <div class="admin-card-pin"><i class="fas fa-thumbtack"></i></div>
+            <div class="admin-card-icon"><i class="fas fa-box-open"></i></div>
             <h2>Products</h2>
             <p>View existing products, edit details, or add a new product with a form similar to the Django admin experience.</p>
             <a href="{% url 'hasta_app:admin_products' %}">Manage Products</a>
         </div>
         <div class="admin-card">
+            <div class="admin-card-pin"><i class="fas fa-thumbtack"></i></div>
+            <div class="admin-card-icon"><i class="fas fa-clipboard-list"></i></div>
             <h2>Orders</h2>
             <p>See all orders, inspect details, and update order status from pending to completed or cancelled.</p>
             <a href="{% url 'hasta_app:admin_orders' %}">Review Orders</a>
@@ -126,3 +285,9 @@
     </div>
 </section>
 {% endblock %}
+{% block footer %}
+    <footer class="footer">
+        <p>&copy; 2024 Hastakala by K. All rights reserved.</p>
+    </footer>
+{% endblock %}
+

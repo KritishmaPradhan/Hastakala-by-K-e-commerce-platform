@@ -52,11 +52,11 @@
                             <div class="stars">
                                 {% for i in "12345" %}
                                     {% if i|add:0 <= product.average_rating %}
-                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-heart"></i>
                                     {% elif i|add:0 <= product.average_rating|add:0.5 %}
-                                        <i class="fas fa-star-half-alt"></i>
+                                        <i class="fas fa-heart-half-alt"></i>
                                     {% else %}
-                                        <i class="far fa-star"></i>
+                                        <i class="far fa-heart"></i>
                                     {% endif %}
                                 {% endfor %}
                             </div>

@@ -9,14 +9,15 @@
         margin-top: 100px;
         min-height: calc(100vh - 100px);
         padding: 3rem 5%;
-        background-color: #fff9fa;
+        background: linear-gradient(135deg, rgba(248, 177, 149, 0.12), rgba(255, 255, 255, 0.92));
     }
     .order-detail-card {
-        background: white;
-        border-radius: 20px;
+        background: linear-gradient(145deg, #fffdfb 0%, #fff7f3 100%);
+        border-radius: 24px;
         padding: 2.5rem;
-        box-shadow: 0 18px 45px rgba(108, 91, 123, 0.08);
-        max-width: 1000px;
+        box-shadow: 0 24px 55px rgba(141, 170, 183, 0.12);
+        border: 1px solid rgba(246, 114, 128, 0.16);
+        max-width: 1100px;
         margin: 0 auto;
     }
     .order-detail-header {
@@ -25,12 +26,21 @@
         gap: 1rem;
         flex-wrap: wrap;
         border-bottom: 1px solid #f3e0dc;
-        padding-bottom: 1.2rem;\n        margin-bottom: 2rem;
+        padding-bottom: 1.2rem;
+        margin-bottom: 2rem;
     }
     .order-detail-header h1 {
         font-size: 2rem;
+        margin: 0 0 0.4rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    .order-detail-header p {
         margin: 0;
-        color: var(--dark-color);
+        color: var(--text-light);
     }
     .order-meta {
         display: grid;
@@ -39,15 +49,49 @@
         margin-bottom: 2rem;
     }
     .meta-box {
-        background: #fdf2f0;
+        position: relative;
+        display: flex;
+        align-items: center;
+        min-height: 120px;
+        padding: 0.9rem;
+        background: linear-gradient(145deg, #ffffff, #fef7f2);
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.9);
+        box-shadow: 0 12px 28px rgba(245, 214, 190, 0.2);
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .meta-box:hover {
+        transform: translateX(-4px);
+        box-shadow: 0 14px 32px rgba(245, 214, 190, 0.28);
+    }
+    .meta-box::before {
+        content: '';
+        position: absolute;
+        left: 0.8rem;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 1%;
+        min-width: 5px;
+        height: 70%;
         border-radius: 18px;
-        padding: 1.35rem 1.5rem;
-        border: 1px solid rgba(255, 206, 186, 0.6);
+        background: linear-gradient(135deg, rgba(248, 177, 149, 0.95), rgba(246, 114, 128, 0.84));
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+        z-index: 1;
+    }
+    .meta-box-content {
+        position: relative;
+        flex: 1;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 16px;
+        padding: 0.95rem 1rem 0.95rem 1.1rem;
+        box-shadow: 0 8px 20px rgba(76, 95, 114, 0.08);
     }
     .meta-box h3 {
-        margin: 0 0 0.5rem;
-        font-size: 0.95rem;
+        margin: 0 0 0.35rem;
+        font-size: 0.9rem;
         color: var(--dark-color);
+        font-weight: 700;
     }
     .meta-box p {
         margin: 0;
@@ -58,18 +102,25 @@
         width: 100%;
         border-collapse: collapse;
         margin-bottom: 2rem;
+        border-radius: 16px;
+        overflow: hidden;
     }
     .order-items-list th,
     .order-items-list td {
         padding: 1rem 1.2rem;
         text-align: left;
         border-bottom: 1px solid #f3e0dc;
+        border-right: 1px solid #f3e0dc;
+    }
+    .order-items-list th:last-child,
+    .order-items-list td:last-child {
+        border-right: none;
     }
     .order-items-list th {
         text-transform: uppercase;
-        font-size: 0.85rem;
+        font-size: 0.83rem;
         letter-spacing: 0.04em;
-        background: #fde8e2;
+        background: linear-gradient(135deg, #fde8e2, #fcefea);
         color: #7d635f;
     }
     .order-items-list tbody tr:hover {
@@ -84,13 +135,20 @@
         font-weight: 700;
         color: var(--dark-color);
     }
-    .form-input {
+    .form-group select {
         width: 100%;
         padding: 0.95rem 1rem;
         border-radius: 14px;
         border: 1px solid #e7d8d3;
         background: #fbf4f2;
         font-size: 0.96rem;
+        color: var(--dark-color);
+    }
+    .form-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.8rem;
+        margin-top: 1.2rem;
     }
     .btn-primary,
     .btn-secondary {
@@ -103,21 +161,42 @@
         justify-content: center;
         gap: 0.4rem;
         border: 1px solid transparent;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
-    .btn-primary { background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; }
-    .btn-secondary { background: #f7f0ee; color: var(--dark-color); border-color: #f1d7c6; }
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+    }
+    .btn-secondary {
+        background: #f7f0ee;
+        color: var(--dark-color);
+        border-color: #f1d7c6;
+    }
+    .btn-primary:hover,
+    .btn-secondary:hover {
+        transform: translateY(-2px);
+    }
     .status-badge {
         display: inline-flex;
-        padding: 0.4rem 0.85rem;
+        padding: 0.45rem 0.9rem;
         border-radius: 999px;
         font-size: 0.9rem;
         text-transform: capitalize;
         font-weight: 700;
+        box-shadow: 0 8px 18px rgba(141, 170, 183, 0.12);
     }
     .status-pending { background: #ffe7ce; color: #d35400; }
     .status-processing { background: #d7ebff; color: #07689f; }
     .status-completed { background: #d5f7e3; color: #2e7d32; }
     .status-cancelled { background: #ffd6dc; color: #b71c1c; }
+    @media (max-width: 768px) {
+        .order-detail-card {
+            padding: 1.5rem;
+        }
+        .order-detail-header {
+            flex-direction: column;
+        }
+    }
 </style>
 {% endblock %}
 
@@ -136,20 +215,28 @@
 
         <div class="order-meta">
             <div class="meta-box">
-                <h3>Total Price</h3>
-                <p>₹{{ order.total_price }}</p>
+                <div class="meta-box-content">
+                    <h3>Total Price</h3>
+                    <p>₹{{ order.total_price }}</p>
+                </div>
             </div>
             <div class="meta-box">
-                <h3>Created</h3>
-                <p>{{ order.created_at|date:'M j, Y H:i' }}</p>
+                <div class="meta-box-content">
+                    <h3>Created</h3>
+                    <p>{{ order.created_at|date:'M j, Y H:i' }}</p>
+                </div>
             </div>
             <div class="meta-box">
-                <h3>Contact</h3>
-                <p>{{ order.phone_number }}</p>
+                <div class="meta-box-content">
+                    <h3>Contact</h3>
+                    <p>{{ order.phone_number }}</p>
+                </div>
             </div>
             <div class="meta-box">
-                <h3>Shipping Address</h3>
-                <p>{{ order.shipping_address }}</p>
+                <div class="meta-box-content">
+                    <h3>Shipping Address</h3>
+                    <p>{{ order.shipping_address }}</p>
+                </div>
             </div>
         </div>
 
@@ -194,4 +281,6 @@
         </form>
     </div>
 </section>
+{% endblock %}
+{% block footer %}
 {% endblock %}

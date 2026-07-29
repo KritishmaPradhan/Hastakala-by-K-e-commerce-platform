@@ -12,19 +12,20 @@
 
 .auth-container {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 3rem;
-    max-width: 1000px;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 2.5rem;
+    max-width: 1120px;
     width: 100%;
     align-items: center;
 }
 
 .auth-box {
     background: white;
-    padding: 2.5rem;
-    border-radius: 20px;
-    box-shadow: 0 10px 40px rgba(108, 91, 123, 0.15);
-    border: 2px solid rgba(248, 177, 149, 0.1);
+    padding: 2.75rem;
+    border-radius: 24px;
+    box-shadow: 0 16px 45px rgba(108, 91, 123, 0.18);
+    border: 2px solid rgba(248, 177, 149, 0.15);
+    transform: translateY(-2px);
 }
 
 .auth-header {
@@ -217,7 +218,15 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 2rem;
+    padding: 1.25rem;
+}
+
+.auth-illustration-image {
+    width: min(88%, 360px);
+    max-height: 350px;
+    object-fit: contain;
+    border-radius: 16px;
+    opacity: 0.65;
 }
 
 .illustration-content {
